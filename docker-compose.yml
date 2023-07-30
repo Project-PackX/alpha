@@ -1,0 +1,19 @@
+---
+version: "3"
+services:
+  backend-alpha-go:
+    container_name: backend-alpha-go
+    image: packx-backend-alpha-go:latest
+    ports:
+      - 4444:4444
+    env_file:
+      - .env.docker
+    restart: unless-stopped
+  db:
+    container_name: postgres
+    ports:
+      - 5432:5432
+    image: postgres:latest
+    env_file:
+      - .env.docker
+    restart: unless-stopped
