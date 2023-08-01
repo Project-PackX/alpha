@@ -6,9 +6,8 @@ import (
 
 // Programon belül a Csomag típus mezői
 type Package struct {
-	gorm.Model
-	ID        string
-	Sender    string
-	Price     float32
-	Delivered bool
+	gorm.Model // ID és időbélyegek benne vannak ebben
+	Sender     string
+	Price      float32
+	Delivered  bool
 }

@@ -27,13 +27,3 @@ func ConnectToDatabase() {
 func SyncDB() {
 	DB.AutoMigrate(&models.Package{})
 }
-
-// ---------- TESZT JELLEGGEL -------------------
-type TestPackage struct {
-	ID        string  `json:"id"`
-	Sender    string  `json:"sender"`
-	Price     float32 `json:"price"`
-	Delivered bool    `json:"delivered"`
-}
-
-var TestDB = []TestPackage{}
