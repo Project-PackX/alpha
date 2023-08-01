@@ -11,3 +11,8 @@ type Package struct {
 	Price      float32
 	Delivered  bool
 }
+
+// Megadjuk a séma és táblanevét a "Package"-eket tartalmazó adattáblának
+func (Package) TableName() string {
+	return "public.csomagok"
+}

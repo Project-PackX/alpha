@@ -12,20 +12,45 @@ func PostsIndex(c *fiber.Ctx) error {
 	return c.Render("packs/index", fiber.Map{})
 }
 
-// Az összes TestDB-ben tárolt adat listázása json formában
+// Az összes nem törölt DB-ben tárolt csomag adatainak listázása json formában
 func ListItems(c *fiber.Ctx) error {
-	// Válasz küldése
-	return c.JSON(fiber.Map{
-		"message":  "Az elemek sikeresen lekérdezve.",
-		"csomagok": initializers.DB,
+
+	var csomagok []models.Package // A lekérdezéshez kell
+
+	// Futtat egy 'SELECT * FROM public.csomagok' lekérdezést
+	result := initializers.DB.Find(&csomagok)
+
+	// Hibakezelés
+	if result.Error != nil {
+		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
+			"Message": "Hiba történt a lekérdezés közben",
+		})
+	}
+
+	// Külön kezelt eset amikor egy rekord sincsen
+	if result.RowsAffected == 0 {
+		return c.Status(fiber.StatusOK).JSON(fiber.Map{
+			"Message": "Nincs egy aktív csomag sem",
+		})
+	}
+
+	// Alapesetben normál válasz a rekordok küldésével
+	return c.Status(fiber.StatusOK).JSON(fiber.Map{
+		"Message":  "Success",
+		"Csomagok": csomagok,
 	})
 }
 
-// Csomag hozzáadás
+// Csomag hozzáadása
 func AddItem(c *fiber.Ctx) error {
 
-	// Statikus csomag készítés a model alapján
-	csomag := models.Package{Sender: "Random Pista", Price: 10, Delivered: false}
+	// Csomag előállítása a kérés 'body'-jából
+	csomag := new(models.Package)
+	if err := c.BodyParser(csomag); err != nil {
+		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
+			"Message": "Hibás kérés",
+		})
+	}
 
 	// Csomag bezúrása
 	result := initializers.DB.Create(&csomag)
@@ -36,11 +61,21 @@ func AddItem(c *fiber.Ctx) error {
 // Csomag törlése
 func DeleteItem(c *fiber.Ctx) error {
 
-	// Statikus csomag modelje, amit törölni akarunk
-	csomag := models.Package{Sender: "Random Pista", Price: 10, Delivered: false}
+	// ID alapú törlés miatt kell
+	type DeleteRequest struct {
+		ID string `json:"id"`
+	}
 
-	// Csomag törlése, aminek id-ja 1
-	result := initializers.DB.Delete(&csomag, 1)
+	// Csomag előállítása a kérés 'body'-jából
+	csomag := new(DeleteRequest)
+	if err := c.BodyParser(csomag); err != nil {
+		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
+			"Message": "Hibás kérés",
+		})
+	}
+
+	// A megadott ID-ú csomag törlése a 'Package'-eket tartalmazó táblából
+	result := initializers.DB.Delete(&models.Package{}, csomag.ID)
 
 	return result.Error
 }
