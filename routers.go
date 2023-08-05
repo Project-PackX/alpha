@@ -8,8 +8,14 @@ import (
 
 // Végpontok beállítása + hozzá a kezelő függvény
 func Routes(app *fiber.App) {
-	app.Get("/", controllers.PostsIndex)
-	app.Get("/list", controllers.ListItems)
-	app.Post("/add", controllers.AddItem)
-	app.Post("/remove", controllers.DeleteItem)
+	app.Get("/", controllers.PostsIndex) // Teszt HTML
+
+	api := app.Group("/api")
+
+	csomagok := api.Group("/csomag")
+	csomagok.Get("/list", controllers.ListPackages)         // /api/csomag/list : Listázza az összes csomagot
+	csomagok.Post("/add", controllers.AddNewPackage)        // /api/csomag/add : Új csomag beszúrása
+	csomagok.Post("/remove", controllers.DeletePackageByID) // /api/csomag/remove : A JSON-ben küldött 'id'-jú csomag törlése
+	csomagok.Get("/list/:id", controllers.ListPackageByID)  // /api/csomag/list/{id} : Listázza az 'id'-adik számú csomagot
+
 }
