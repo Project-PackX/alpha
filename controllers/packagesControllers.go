@@ -13,6 +13,42 @@ func PostsIndex(c *fiber.Ctx) error {
 	return c.Render("packs/index", fiber.Map{})
 }
 
+// Az összes felhasználó, és a hozzájuk tartozó csomag listázása json formában
+func ListUsersWithPackages(c *fiber.Ctx) error {
+	var users []models.User
+	initializers.DB.Model(&models.User{}).Preload("Packages").Find(&users)
+
+	return c.Status(fiber.StatusOK).JSON(fiber.Map{
+		"Message":  "Success",
+		"Csomagok": users,
+	})
+}
+
+// Az URL-ben szereplő csomag azonosító alapján elküldi a csomag státuszát
+func GetPackageStatus(c *fiber.Ctx) error {
+
+	// Az adatbázis amiben a szükséges táblák vannak
+	db := initializers.DB
+
+	// A csomag azonosító kinyerése az URL-ből
+	id := c.Params("id")
+
+	// A 'packagestatuses' táblában megkeresi a megfelelő rekordot
+	var statuszindex models.PackageStatus
+	db.Find(&statuszindex, "package_id = ?", id)
+
+	// A fent kikeresett rekord alapján a státusz nevének kikeresése
+	var statusznev models.Status
+	db.Find(&statusznev, "id = ?", statuszindex.Status_id)
+
+	// Válasz küldés
+	return c.Status(fiber.StatusOK).JSON(fiber.Map{
+		"PackageID":  statuszindex.Package_id,
+		"StatusName": statusznev.Name,
+	})
+
+}
+
 // Az összes nem törölt DB-ben tárolt csomag adatainak listázása json formában
 func ListPackages(c *fiber.Ctx) error {
 

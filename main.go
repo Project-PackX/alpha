@@ -12,7 +12,14 @@ import (
 func init() {
 	initializers.LoadEnvVariables()  // Környezeti változók betöltése (port, adatbázis)
 	initializers.ConnectToDatabase() // Környezeti változók alapján csatlakozás az adatbázishoz
-	initializers.SyncDB()            // Adatbázis adatok automigrálása a gorm DB-be
+
+	// TESZT ADATOK MIATT
+	initializers.DropTables() // Adatbázis kiürítése
+	// ------
+
+	initializers.SyncDB()              // Adatbázis adatok automigrálása a gorm DB-be
+	initializers.GenerateTestEntries() // Adatok generálása az adatbázisba az egyszerűbb teszteléshez
+
 }
 
 func main() {
@@ -33,4 +40,5 @@ func main() {
 
 	// Webszerver elindítása
 	app.Listen(":" + os.Getenv("PORT"))
+
 }
