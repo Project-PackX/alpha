@@ -24,6 +24,15 @@ type User struct {
 	Packages []Package
 }
 
+// UserRequest DTO for incoming request bodies
+type UserRequest struct {
+	Name     string `json:"name"`
+	Address  string `json:"address"`
+	Phone    string `json:"phone"`
+	Email    string `json:"email"`
+	Password string `json:"password"`
+}
+
 // Megadjuk a séma és táblanevét a "Package"-eket tartalmazó adattáblának
 func (User) TableName() string {
 	return "public.users"

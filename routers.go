@@ -10,8 +10,6 @@ import (
 func Routes(app *fiber.App) {
 	app.Get("/", controllers.PostsIndex) // Teszt HTML
 
-	app.Post("/register", controllers.RegisterNewUser)
-
 	api := app.Group("/api")
 
 	csomagok := api.Group("/csomag")
@@ -21,4 +19,7 @@ func Routes(app *fiber.App) {
 	csomagok.Post("/remove", controllers.DeletePackageByID)      // /api/csomag/remove : A JSON-ben küldött 'id'-jú csomag törlése
 	csomagok.Get("/list/:id", controllers.ListPackageByID)       // /api/csomag/list/{id} : Listázza az 'id'-adik számú csomagot
 	csomagok.Get("/getstatus/:id", controllers.GetPackageStatus) // /api/csomag/getstatus/{id} : Visszaadja az adott csomag státuszát
+
+	users := api.Group("/users")
+	users.Post("/register", controllers.RegisterNewUser) // /api/users/register : Register new user
 }

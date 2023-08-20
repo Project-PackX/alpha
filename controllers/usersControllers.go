@@ -5,32 +5,33 @@ import (
 	"PackX/models"
 
 	"github.com/gofiber/fiber/v2"
+	"golang.org/x/crypto/bcrypt"
 )
 
 func RegisterNewUser(c *fiber.Ctx) error {
-
-	felh := new(models.User)
-	if err := c.BodyParser(felh); err != nil {
+	newUser := new(models.User)
+	if err := c.BodyParser(newUser); err != nil {
 		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
-			"Message": "Hibás kérés",
+			"Message": "Invalid user",
 		})
 	}
 
-	// Ellenőrizzük, hogy szerepl-e már az ember
-	felh1 := models.User{}
-
+	// Check whether a user with same email exists in the db
 	// If the user already exists, return an error
-	if initializers.DB.Where("email = ?", felh.Email).First(&felh1).Error == nil {
+	if initializers.DB.Where("email = ?", newUser.Email).First(&models.User{}).Error == nil {
 		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
-			"Message": "Ezzel az email-lel már létezik felhasználó",
+			"Message": "User already exists with given email",
 		})
 	}
+
+	hashedPassword, _ := bcrypt.GenerateFromPassword([]byte(newUser.Password), 14)
+	newUser.Password = string(hashedPassword)
 
 	// Save the user to the database
-	initializers.DB.Create(&felh)
+	initializers.DB.Create(&newUser)
 
 	// Send a success response
 	return c.Status(fiber.StatusOK).JSON(fiber.Map{
-		"Message": "Felhasználó sikeresen hozzáadva",
+		"Message": "User added successfully",
 	})
 }
