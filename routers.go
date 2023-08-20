@@ -10,6 +10,8 @@ import (
 func Routes(app *fiber.App) {
 	app.Get("/", controllers.PostsIndex) // Teszt HTML
 
+	app.Post("/register", controllers.RegisterNewUser)
+
 	api := app.Group("/api")
 
 	csomagok := api.Group("/csomag")

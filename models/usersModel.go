@@ -20,6 +20,7 @@ type User struct {
 	Address  string
 	Phone    string
 	Email    string
+	Password string
 	Packages []Package
 }
 
