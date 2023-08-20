@@ -3,39 +3,31 @@ package controllers
 import (
 	"PackX/initializers"
 	"PackX/models"
-	"fmt"
 
 	"github.com/gofiber/fiber/v2"
 )
 
 func RegisterNewUser(c *fiber.Ctx) error {
-	// Felhasználóhoz szükséges infók
-	newName := c.Params("name")
-	newEmail := c.Params("email")
-	newPassword := c.Params("password")
 
-	fmt.Println(newEmail)
+	felh := new(models.User)
+	if err := c.BodyParser(felh); err != nil {
+		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
+			"Message": "Hibás kérés",
+		})
+	}
 
 	// Ellenőrizzük, hogy szerepl-e már az ember
-	user := models.User{}
-	err := initializers.DB.Where("email = ?", newEmail).First(&user).Error
+	felh1 := models.User{}
 
 	// If the user already exists, return an error
-	if err != nil {
+	if initializers.DB.Where("email = ?", felh.Email).First(&felh1).Error == nil {
 		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
 			"Message": "Ezzel az email-lel már létezik felhasználó",
 		})
 	}
 
-	// Create a new user
-	newUser := models.User{
-		Name:     newName,
-		Email:    newEmail,
-		Password: newPassword,
-	}
-
 	// Save the user to the database
-	initializers.DB.Create(&newUser)
+	initializers.DB.Create(&felh)
 
 	// Send a success response
 	return c.Status(fiber.StatusOK).JSON(fiber.Map{

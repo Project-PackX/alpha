@@ -7,6 +7,7 @@ import (
 
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
+	"gorm.io/gorm/logger"
 )
 
 // A programban szereplő adatbázis definiálása
@@ -16,7 +17,9 @@ var DB *gorm.DB
 func ConnectToDatabase() {
 	var err error
 	dsn := os.Getenv("DB_URL")
-	DB, err = gorm.Open(postgres.Open(dsn), &gorm.Config{})
+	DB, err = gorm.Open(postgres.Open(dsn), &gorm.Config{
+		Logger: logger.Default.LogMode(logger.Silent),
+	})
 
 	if err != nil {
 		fmt.Println("Nem sikerült kapcsolódni az adatbázishoz")
