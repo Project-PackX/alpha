@@ -12,7 +12,7 @@ func Routes(app *fiber.App) {
 
 	api := app.Group("/api")
 
-	csomagok := api.Group("/csomag")
+	csomagok := api.Group("/package")
 	csomagok.Get("/listuwp", controllers.ListUsersWithPackages)  // /api/csomag/listuwp : Felhasználónként listázza a csomagokat
 	csomagok.Get("/list", controllers.ListPackages)              // /api/csomag/list : Listázza az összes csomagot
 	csomagok.Post("/add", controllers.AddNewPackage)             // /api/csomag/add : Új csomag beszúrása
@@ -22,4 +22,8 @@ func Routes(app *fiber.App) {
 
 	users := api.Group("/users")
 	users.Post("/register", controllers.RegisterNewUser) // /api/users/register : Register new user
+
+	lockers := api.Group("/lockers")
+	lockers.Get("/getgroup/:id", controllers.GetCityByLockerID)  // /api/lockers/getgroup/{id} : Get the name of the city where the locker is located at
+	lockers.Get("/lgl/:groupid", controllers.ListLockersByGroup) // /api/lockers/lgl/{groupid} : List all the lockers in the {groupid} group
 }
