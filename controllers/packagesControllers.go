@@ -8,80 +8,83 @@ import (
 	"github.com/gofiber/fiber/v2"
 )
 
-// Teszt jelleggel az index.html megjelenítése
+// Just load a test html page
 func PostsIndex(c *fiber.Ctx) error {
 	return c.Render("packs/index", fiber.Map{})
 }
 
-// Az összes felhasználó, és a hozzájuk tartozó csomag listázása json formában
+// List all the users with their packages
 func ListUsersWithPackages(c *fiber.Ctx) error {
+
+	// Slice that will contain all information
 	var users []models.User
 	initializers.DB.Model(&models.User{}).Preload("Packages").Find(&users)
 
+	// Return as OK
 	return c.Status(fiber.StatusOK).JSON(fiber.Map{
 		"Message":  "Success",
 		"Csomagok": users,
 	})
 }
 
-// Az URL-ben szereplő csomag azonosító alapján elküldi a csomag státuszát
+// Return the package status based on the {id} in the URL
 func GetPackageStatus(c *fiber.Ctx) error {
 
-	// Az adatbázis amiben a szükséges táblák vannak
+	// Database is needed in this function
 	db := initializers.DB
 
-	// A csomag azonosító kinyerése az URL-ből
+	// Getting the {id} from the URL
 	id := c.Params("id")
 
-	// A 'packagestatuses' táblában megkeresi a megfelelő rekordot
-	var statuszindex models.PackageStatus
-	db.Find(&statuszindex, "package_id = ?", id)
+	// Getting the package status code from the packagestatus table
+	var statusindex models.PackageStatus
+	db.Find(&statusindex, "package_id = ?", id)
 
-	// A fent kikeresett rekord alapján a státusz nevének kikeresése
-	var statusznev models.Status
-	db.Find(&statusznev, "id = ?", statuszindex.Status_id)
+	// Getting the right status row in the status table
+	var statusname models.Status
+	db.Find(&statusname, "id = ?", statusindex.Status_id)
 
-	// Válasz küldés
+	// Returning the answer
 	return c.Status(fiber.StatusOK).JSON(fiber.Map{
-		"PackageID":  statuszindex.Package_id,
-		"StatusName": statusznev.Name,
+		"PackageID":  statusindex.Package_id,
+		"StatusName": statusname.Name,
 	})
 
 }
 
-// Az összes nem törölt DB-ben tárolt csomag adatainak listázása json formában
+// List all packages
 func ListPackages(c *fiber.Ctx) error {
 
-	var csomagok []models.Package // A lekérdezéshez kell
+	var csomagok []models.Package // Slice that will contain all packages
 
-	// Futtat egy 'SELECT * FROM public.csomagok' lekérdezést
+	// Execute 'SELECT * FROM public.csomagok' query
 	result := initializers.DB.Find(&csomagok)
 
-	// Hibakezelés
+	// Error handling
 	if result.Error != nil {
 		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
 			"Message": "Hiba történt a lekérdezés közben",
 		})
 	}
 
-	// Külön kezelt eset amikor egy rekord sincsen
+	// Separately treated case where no record exists
 	if result.RowsAffected == 0 {
 		return c.Status(fiber.StatusOK).JSON(fiber.Map{
 			"Message": "Nincs egy aktív csomag sem",
 		})
 	}
 
-	// Alapesetben normál válasz a rekordok küldésével
+	// Returning the packages
 	return c.Status(fiber.StatusOK).JSON(fiber.Map{
 		"Message":  "Success",
 		"Csomagok": csomagok,
 	})
 }
 
-// Csomag hozzáadása
+// Insert new package to the database
 func AddNewPackage(c *fiber.Ctx) error {
 
-	// Csomag előállítása a kérés 'body'-jából
+	// Creating the new package with the input json body
 	csomag := new(models.Package)
 	if err := c.BodyParser(csomag); err != nil {
 		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
@@ -89,32 +92,32 @@ func AddNewPackage(c *fiber.Ctx) error {
 		})
 	}
 
-	// Csomag beszúrása
+	// Inserting the new package
 	result := initializers.DB.Create(&csomag)
 
-	// Hibakezelés
+	// Error handling
 	if result.Error != nil {
 		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
 			"Message": "Hiba történt a csomag létrehozása közben",
 		})
 	}
 
-	// Alapesetben az új csomag sikeresen létrejött
+	// Return as OK
 	return c.Status(fiber.StatusOK).JSON(fiber.Map{
 		"Message": "Csomag sikeresen hozzáadva",
 	})
 }
 
-// Csomag törlése
+// Remove package with input json {id}
 func DeletePackageByID(c *fiber.Ctx) error {
 
-	// ID alapú törlés miatt kell
-	// FONTOS: a küldött JSON-ben szám típusú legyen az 'id'
+	// Needed because the deletion is {id} based
+	// IMPORTANT: the input json {id} needs to be an INT
 	type DeleteRequest struct {
 		ID uint `json:"id"`
 	}
 
-	// Csomag előállítása a kérés 'body'-jából
+	// Making the package with the desired {id}
 	csomag := new(DeleteRequest)
 	if err := c.BodyParser(csomag); err != nil {
 		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
@@ -122,40 +125,40 @@ func DeletePackageByID(c *fiber.Ctx) error {
 		})
 	}
 
-	// A megadott ID-jú csomag törlése a 'Package'-eket tartalmazó táblából
+	// Removing the right package based on the {id}
 	result := initializers.DB.Delete(&models.Package{}, csomag.ID)
 
-	// Hibakezelés
+	// Error handling
 	if result.Error != nil {
 		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
 			"Message": "Hiba történt a csomag törlése közben",
 		})
 	}
 
-	// Alapesetben a csomag sikeresen törlődött
+	// Return as OK
 	return c.Status(fiber.StatusOK).JSON(fiber.Map{
 		"Message": "Csomag sikeresen törölve",
 	})
 }
 
-// Adott 'id'-jú csomag adatainak lekérdezése
+// Getting the details of the {id}. package
 func ListPackageByID(c *fiber.Ctx) error {
 
-	// Az 'id' kinyerése az URL-ből
+	// Getting the {id} from URL
 	id := c.Params("id")
 
-	// Az 'id'-nak megfelelő csomag megkeresése adatbázisból
+	// Search for the package with the desired {id}
 	var packageData *models.Package
 	err := initializers.DB.Where("id = ?", id).First(&packageData).Error
 
-	// Hibakezelés
+	// Error handling
 	if err != nil {
-		// Üres a lekérdezés eredménye
+		// If there are no package with that {id}
 		if err == sql.ErrNoRows {
 			c.Status(fiber.StatusNotFound).JSON(fiber.Map{
 				"Message": "Nincs ilyen azonosítójú csomag",
 			})
-		} else { // Minden egyéb..
+		} else { // Other error happened during the query
 			c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
 				"Message": "Hiba történt a lekérdezés közben",
 			})
@@ -163,7 +166,7 @@ func ListPackageByID(c *fiber.Ctx) error {
 		return err
 	}
 
-	// A keresett csomag adatainak küldése a kliensnek JSON formában
+	// Return as OK
 	c.Status(fiber.StatusOK).JSON(packageData)
 	return nil
 }

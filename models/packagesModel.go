@@ -2,18 +2,18 @@ package models
 
 import "gorm.io/gorm"
 
-// Programon belül a Csomag típus mezői
+// Package DB table model
 type Package struct {
 	gorm.Model
-	UserID             uint    // Küldő fél (feladó) azonosítója
-	DestinationAddress string  // A kiszállítási cím
-	Content            string  // A csomag tartalma
-	Price              float64 // A csomag küldésének ára
-	Note               string  // Egyéb megjegyzés, opcionális
-	CourierID          uint    // A csomagot szállító futár azonosítója
+	UserID             uint    // Sender's id
+	DestinationAddress string  // Destination address (street + house number)
+	Content            string  // What is inside the package
+	Price              float64 // Delivery fee
+	Note               string  // Extra note
+	CourierID          uint    // Courier's id who delivers the package
 }
 
-// Megadjuk a séma és táblanevét a "Package"-eket tartalmazó adattáblának
+// Name of the Package structs in the DB
 func (Package) TableName() string {
 	return "public.packages"
 }

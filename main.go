@@ -10,35 +10,38 @@ import (
 )
 
 func init() {
-	initializers.LoadEnvVariables()  // Környezeti változók betöltése (port, adatbázis)
-	initializers.ConnectToDatabase() // Környezeti változók alapján csatlakozás az adatbázishoz
+	initializers.LoadEnvVariables()  // Loading environment variables (port, database)
+	initializers.ConnectToDatabase() // Conencting to database based on env vars
 
-	// TESZT ADATOK MIATT
-	initializers.DropTables() // Adatbázis kiürítése
+	// FOR TESTING PURPOSES
+	initializers.DropTables()
 	// ------
 
-	initializers.SyncDB()              // Adatbázis adatok automigrálása a gorm DB-be
-	initializers.GenerateTestEntries() // Adatok generálása az adatbázisba az egyszerűbb teszteléshez
+	initializers.SyncDB() // Creating tanles based on the models
+
+	// FOR TESTING PURPOSES
+	initializers.GenerateTestEntries() // Generating test datas
+	// ------
 
 }
 
 func main() {
-	// Nézetek beállítása
+	// Set up views
 	engine := html.New("./views", ".html")
 
-	// Fiber inicializálása + nézet beállítás
+	// Creating the fiber app with views
 	app := fiber.New(fiber.Config{
 		Views: engine,
 	})
 
-	// 'app' beállítása
+	// Configure the application
 	app.Static("/", "./public")
 	app.Use(middleware.RequireAuth)
 
-	// Kölünböző végpontok és hozzájuk tartozó kezelőfüggvények kihelyezése
+	// Endpoints management via function
 	Routes(app)
 
-	// Webszerver elindítása
+	// Start the webserver
 	app.Listen(":" + os.Getenv("PORT"))
 
 }

@@ -2,14 +2,14 @@ package models
 
 import "gorm.io/gorm"
 
-// Locker Table Model
+// Locker DB table Model
 type Locker struct {
 	gorm.Model
 	Address       string // Address of the locker
 	LockerGroupID uint   // A Lockergroup ID where the locker belongs to
 }
 
-// Giving the scema and table name for the 'Locker' model
+// Name of the Locker structs in the DB
 func (Locker) TableName() string {
 	return "public.lockers"
 }

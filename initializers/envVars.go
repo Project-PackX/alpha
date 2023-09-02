@@ -6,7 +6,7 @@ import (
 	"github.com/joho/godotenv"
 )
 
-// A .env fájl beolvasása
+// Reading the .env file
 func LoadEnvVariables() {
 	err := godotenv.Load()
 	if err != nil {

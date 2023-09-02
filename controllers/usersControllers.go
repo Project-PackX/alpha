@@ -12,6 +12,8 @@ import (
 )
 
 func RegisterNewUser(c *fiber.Ctx) error {
+
+	// Creating the new user
 	newUser := new(models.User)
 	if err := c.BodyParser(newUser); err != nil {
 		return c.Status(fiber.StatusBadRequest).JSON(exceptions.BaseException{
@@ -29,6 +31,7 @@ func RegisterNewUser(c *fiber.Ctx) error {
 		})
 	}
 
+	// Password hashing
 	hashedPassword, _ := bcrypt.GenerateFromPassword([]byte(newUser.Password), 14)
 	newUser.Password = string(hashedPassword)
 

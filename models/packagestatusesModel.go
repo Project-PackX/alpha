@@ -1,12 +1,12 @@
 package models
 
-// Programon belül a Csomag típus mezői
+// PackageStatus DB table model
 type PackageStatus struct {
 	Package_id uint `gorm:"primaryKey"`
 	Status_id  uint `gorm:"primaryKey"`
 }
 
-// Megadjuk a séma és táblanevét a "Package"-eket tartalmazó adattáblának
+// Name of the PackageStatus structs in the DB
 func (PackageStatus) TableName() string {
 	return "public.packagestatuses"
 }

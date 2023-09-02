@@ -7,6 +7,7 @@ import (
 	"github.com/gofiber/fiber/v2"
 )
 
+// Getting the group city based on the locker id
 func GetCityByLockerID(c *fiber.Ctx) error {
 
 	// Get the {id}. row in Locker table
@@ -23,6 +24,7 @@ func GetCityByLockerID(c *fiber.Ctx) error {
 	})
 }
 
+// List all lockers by the input group id
 func ListLockersByGroup(c *fiber.Ctx) error {
 
 	// Get the locker group id from the request

@@ -2,14 +2,14 @@ package models
 
 import "gorm.io/gorm"
 
-// Programon belül a Csomag típus mezői
+// Courier DB table model
 type Courier struct {
 	gorm.Model
-	Name  string
-	Phone string
+	Name  string // Name of the courier
+	Phone string // Phone address of the courier
 }
 
-// Megadjuk a séma és táblanevét a "Package"-eket tartalmazó adattáblának
+// Name of the Courier structs in the DB
 func (Courier) TableName() string {
 	return "public.couriers"
 }

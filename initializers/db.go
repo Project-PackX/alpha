@@ -10,10 +10,10 @@ import (
 	"gorm.io/gorm/logger"
 )
 
-// A programban szereplő adatbázis definiálása
+// Defining the application databse structure with gorm
 var DB *gorm.DB
 
-// Adatbázishot csatlakozás
+// Connectiing to the database based on the environment variables
 func ConnectToDatabase() {
 	var err error
 	dsn := os.Getenv("DB_URL")
@@ -21,12 +21,13 @@ func ConnectToDatabase() {
 		Logger: logger.Default.LogMode(logger.Silent),
 	})
 
+	// Error handling
 	if err != nil {
 		fmt.Println("Nem sikerült kapcsolódni az adatbázishoz")
 	}
 }
 
-// Tesztadatok miatt kell csak, hogy egységes legyen mindenkinek
+// FOR TESTING PURPOSES
 func DropTables() {
 	DB.Exec("DROP TABLE IF EXISTS public.users;")
 	DB.Exec("DROP TABLE IF EXISTS public.packages;")
@@ -37,7 +38,7 @@ func DropTables() {
 	DB.Exec("DROP TABLE IF EXISTS public.lockergroups;")
 }
 
-// Automigrálás adatbázisból Go struct-okba
+// Migrating the DB tables into Go models
 func SyncDB() {
 	DB.AutoMigrate(&models.Package{})
 	DB.AutoMigrate(&models.Courier{})
@@ -48,9 +49,10 @@ func SyncDB() {
 	DB.AutoMigrate(&models.LockerGroup{})
 }
 
+// Generate test datas
 func GenerateTestEntries() {
 
-	// Felhasználók
+	// Users
 
 	felh1 := models.User{
 		Name:    "Kovács Bea",
@@ -76,7 +78,7 @@ func GenerateTestEntries() {
 	}
 	DB.Create(&felh3)
 
-	// Csomagok
+	// Packages
 
 	csomag1 := models.Package{
 		UserID:             2,
@@ -128,7 +130,7 @@ func GenerateTestEntries() {
 	}
 	DB.Create(&csomag5)
 
-	// Lehetséges csomag státuszok
+	// Possible package statuses
 
 	statusz1 := models.Status{
 		Id:   1,
@@ -166,7 +168,7 @@ func GenerateTestEntries() {
 	}
 	DB.Create(&statusz6)
 
-	// A bevitt csomagok státuszai
+	// Package statuses
 
 	csomagstatusz1 := models.PackageStatus{
 		Package_id: 1,
@@ -198,7 +200,7 @@ func GenerateTestEntries() {
 	}
 	DB.Create(&csomagstatusz5)
 
-	// Futárok
+	// Couriers
 
 	futar1 := models.Courier{
 		Name:  "Kiss Bendegúz",

@@ -4,11 +4,11 @@ import (
 	"gorm.io/gorm"
 )
 
-// Programon belül a Csomag típus mezői
+// User DB table model
 type User struct {
 	gorm.Model
 	/*
-			Benne van:
+			Inside gorm.Model:
 
 			ID        uint           `gorm:"primaryKey"`
 		    CreatedAt time.Time
@@ -33,7 +33,7 @@ type UserRequest struct {
 	Password string `json:"password"`
 }
 
-// Megadjuk a séma és táblanevét a "Package"-eket tartalmazó adattáblának
+// Name of the User structs in the DB
 func (User) TableName() string {
 	return "public.users"
 }
