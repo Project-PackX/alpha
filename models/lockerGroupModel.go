@@ -4,7 +4,7 @@ package models
 type LockerGroup struct {
 	ID      uint     // Identification of the locker group
 	City    string   // For human readability, which city is this group in
-	Lockers []Locker // List of the lockers, which are belongs to this group
+	Lockers []Locker // List of the lockers, which belong to this group
 }
 
 // Name of the LockerGroup structs in the DB

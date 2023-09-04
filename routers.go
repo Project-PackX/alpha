@@ -13,17 +13,20 @@ func Routes(app *fiber.App) {
 	api := app.Group("/api")
 
 	csomagok := api.Group("/packages")
-	csomagok.Get("/listuwp", controllers.ListUsersWithPackages)  // /api/csomag/listuwp : Listing packages by users
-	csomagok.Get("/list", controllers.ListPackages)              // /api/csomag/list : Listing all packages
-	csomagok.Post("/add", controllers.AddNewPackage)             // /api/csomag/add : Inserting new package via input json
-	csomagok.Post("/remove", controllers.DeletePackageByID)      // /api/csomag/remove : Delete package based on input json 'id'
-	csomagok.Get("/list/:id", controllers.ListPackageByID)       // /api/csomag/list/{id} : Getting the {id}. package details
+
+	csomagok.Get("", controllers.ListPackages)                   // /api/csomag : Listing all packages
+	csomagok.Post("", controllers.AddNewPackage)                 // /api/csomag : Inserting new package via input json
+	csomagok.Post("/:id", controllers.DeletePackageByID)         // /api/csomag/{id} : Delete package based on pathvariable 'id'
+	csomagok.Get("/:id", controllers.ListPackageByID)            // /api/csomag/{id} : Getting the {id}. package details
 	csomagok.Get("/getstatus/:id", controllers.GetPackageStatus) // /api/csomag/getstatus/{id} : Getting the {id}. package status
 
 	users := api.Group("/users")
 	users.Post("/register", controllers.RegisterNewUser) // /api/users/register : Register new user
+	// users.Get("/packages", controllers.GetPackagesUnderUsers) "// csomagok.Get("/uwp", controllers.ListUsersWithPackages" Instead of this, use the users/packages or just get all of the packages
+	// if you want to get a specific user's packages, refer to the next one
+	// users.Get("/:id/packages", controller.GetPackagesUnderUser) // /api/users/{id}/packages : Get all packages under user
 
 	lockers := api.Group("/lockers")
-	lockers.Get("/getgroup/:id", controllers.GetCityByLockerID)  // /api/lockers/getgroup/{id} : Get the name of the city where the locker is located at
-	lockers.Get("/lgl/:groupid", controllers.ListLockersByGroup) // /api/lockers/lgl/{groupid} : List all the lockers in the {groupid} group
+	lockers.Get("/:id", controllers.GetCityByLockerID)                        // /api/lockers/{id} : Get the name of the city where the locker is located at
+	lockers.Get("/lockers-by-group/:groupid", controllers.ListLockersByGroup) // /api/lockers/lockers-by-group/{groupid} : List all the lockers in the {groupid} group
 }
