@@ -7,7 +7,7 @@ import (
 	"github.com/joho/godotenv"
 )
 
-// A .env fájl beolvasása
+// Reading the .env file
 func LoadEnvVariables() {
 	if err := godotenv.Load(); err != nil && !os.IsNotExist(err) {
 		log.Fatalln("Error loading .env")
