@@ -1,6 +1,7 @@
 package initializers
 
 import (
+	"PackX/enums"
 	"PackX/models"
 	"fmt"
 	"os"
@@ -81,52 +82,47 @@ func GenerateTestEntries() {
 	// Packages
 
 	csomag1 := models.Package{
-		UserID:             2,
-		DestinationAddress: "Szikra utca 26. II/28",
-		Content:            "Cipő",
-		Price:              37990,
-		Note:               "Utánvét",
-		CourierID:          1,
+		UserID:    2,
+		Size:      enums.Sizes.Medium,
+		Price:     37990,
+		Note:      "Utánvét",
+		CourierID: 1,
 	}
 	DB.Create(&csomag1)
 
 	csomag2 := models.Package{
-		UserID:             1,
-		DestinationAddress: "Szendrei Lipót sétány 40.",
-		Content:            "Laptop",
-		Price:              225000,
-		Note:               "Javítás",
-		CourierID:          1,
+		UserID:    1,
+		Size:      enums.Sizes.Small,
+		Price:     225000,
+		Note:      "Javítás",
+		CourierID: 1,
 	}
 	DB.Create(&csomag2)
 
 	csomag3 := models.Package{
-		UserID:             2,
-		DestinationAddress: "Nagy István út 81.",
-		Content:            "Kabát",
-		Price:              17490,
-		Note:               "-",
-		CourierID:          2,
+		UserID:    2,
+		Size:      enums.Sizes.Medium,
+		Price:     17490,
+		Note:      "-",
+		CourierID: 2,
 	}
 	DB.Create(&csomag3)
 
 	csomag4 := models.Package{
-		UserID:             3,
-		DestinationAddress: "Kő utca 5.",
-		Content:            "25W töltőfej",
-		Price:              3989,
-		Note:               "Cserekészülék",
-		CourierID:          2,
+		UserID:    3,
+		Size:      enums.Sizes.Small,
+		Price:     3989,
+		Note:      "Cserekészülék",
+		CourierID: 2,
 	}
 	DB.Create(&csomag4)
 
 	csomag5 := models.Package{
-		UserID:             1,
-		DestinationAddress: "Rózsavölgy körút 67/B",
-		Content:            "Bútor",
-		Price:              55990,
-		Note:               "-",
-		CourierID:          1,
+		UserID:    1,
+		Size:      enums.Sizes.Large,
+		Price:     55990,
+		Note:      "-",
+		CourierID: 1,
 	}
 	DB.Create(&csomag5)
 
@@ -134,37 +130,37 @@ func GenerateTestEntries() {
 
 	statusz1 := models.Status{
 		Id:   1,
-		Name: "Feladva",
+		Name: enums.Statuses.Dispatch,
 	}
 	DB.Create(&statusz1)
 
 	statusz2 := models.Status{
 		Id:   2,
-		Name: "Átvéve",
+		Name: enums.Statuses.Transit,
 	}
 	DB.Create(&statusz2)
 
 	statusz3 := models.Status{
 		Id:   3,
-		Name: "Raktárban",
+		Name: enums.Statuses.Warehouse,
 	}
 	DB.Create(&statusz3)
 
 	statusz4 := models.Status{
 		Id:   4,
-		Name: "Szállítás alatt",
+		Name: enums.Statuses.Delivery,
 	}
 	DB.Create(&statusz4)
 
 	statusz5 := models.Status{
 		Id:   5,
-		Name: "Kézbesítve",
+		Name: enums.Statuses.Delivered,
 	}
 	DB.Create(&statusz5)
 
 	statusz6 := models.Status{
 		Id:   6,
-		Name: "Törölve",
+		Name: enums.Statuses.Cancelled,
 	}
 	DB.Create(&statusz6)
 
