@@ -5,7 +5,6 @@ import "gorm.io/gorm"
 // Package DB table model
 type Package struct {
 	gorm.Model
-	Id                  uint    // Entity id
 	UserID              uint    // Sender's id
 	ReceiverId          uint    // Receiver's id
 	DestinationLockerId uint    // Destination locker's id

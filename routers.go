@@ -16,12 +16,12 @@ func Routes(app *fiber.App) {
 
 	csomagok.Get("", controllers.ListPackages)                   // /api/csomag : Listing all packages
 	csomagok.Post("", controllers.AddNewPackage)                 // /api/csomag : Inserting new package via input json
-	csomagok.Post("/:id", controllers.DeletePackageByID)         // /api/csomag/{id} : Delete package based on pathvariable 'id'
+	csomagok.Delete("/:id", controllers.DeletePackageByID)       // /api/csomag/{id} : Delete package based on pathvariable 'id'
 	csomagok.Get("/:id", controllers.ListPackageByID)            // /api/csomag/{id} : Getting the {id}. package details
 	csomagok.Get("/getstatus/:id", controllers.GetPackageStatus) // /api/csomag/getstatus/{id} : Getting the {id}. package status
 
 	users := api.Group("/users")
-	users.Post("/register", controllers.RegisterNewUser) // /api/users/register : Register new user
+	users.Post("/register", controllers.RegisterNewUser) // /api/users/register : Register new user via input JSON
 	// users.Get("/packages", controllers.GetPackagesUnderUsers) "// csomagok.Get("/uwp", controllers.ListUsersWithPackages" Instead of this, use the users/packages or just get all of the packages
 	// if you want to get a specific user's packages, refer to the next one
 	// users.Get("/:id/packages", controller.GetPackagesUnderUser) // /api/users/{id}/packages : Get all packages under user

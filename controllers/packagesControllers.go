@@ -111,22 +111,11 @@ func AddNewPackage(c *fiber.Ctx) error {
 // Remove package with input json {id}
 func DeletePackageByID(c *fiber.Ctx) error {
 
-	// Needed because the deletion is {id} based
-	// IMPORTANT: the input json {id} needs to be an INT
-	type DeleteRequest struct {
-		ID uint `json:"id"`
-	}
+	//Getting the {id} from URL
+	id := c.Params("id")
 
-	// Making the package with the desired {id}
-	csomag := new(DeleteRequest)
-	if err := c.BodyParser(csomag); err != nil {
-		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
-			"Message": "Hibás kérés",
-		})
-	}
-
-	// Removing the right package based on the {id}
-	result := initializers.DB.Delete(&models.Package{}, csomag.ID)
+	// Removing the package based on the {id}
+	result := initializers.DB.Delete(&models.Package{}, id)
 
 	// Error handling
 	if result.Error != nil {
