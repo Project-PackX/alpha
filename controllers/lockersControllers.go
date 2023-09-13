@@ -39,18 +39,24 @@ func GetCityByLockerID(c *fiber.Ctx) error {
 	})
 }
 
-// List all lockers by the input group id
-func ListLockersByGroup(c *fiber.Ctx) error {
+// Get all the package in the input locker via URL id
+func GetPackagesByLockerID(c *fiber.Ctx) error {
 
-	// Get the locker group id from the request
-	id := c.Params("groupid")
+	// Getting the {id} from URL
+	id := c.Params("id")
 
-	// Getting all lockers with the right group id
-	var lockers []models.Locker
-	initializers.DB.Find(&lockers, "locker_group_id = ?", id)
+	// Getting the connection models which have the right locker id
+	var temp []models.PackageLocker
+	initializers.DB.Find(&temp, "locker_id = ?", id)
 
-	// Sending back all the lockers in that group with JSON format
+	// getting a slice of package ids, which are in the locker
+	var packages []uint
+	for i := 0; i < len(temp); i++ {
+		packages = append(packages, temp[i].Package_id)
+	}
+
+	// Sending back the list of package ids
 	return c.Status(fiber.StatusOK).JSON(fiber.Map{
-		"Message": lockers,
+		"Message": packages,
 	})
 }

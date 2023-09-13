@@ -10,12 +10,11 @@ type User struct {
 	/*
 			Inside gorm.Model:
 
-			ID        uint           `gorm:"primaryKey"`
+			ID        uint           `gorm:"primaryKey"` incrementing
 		    CreatedAt time.Time
 		    UpdatedAt time.Time
 		    DeletedAt gorm.DeletedAt `gorm:"index"`
 	*/
-
 	Name     string
 	Address  string
 	Phone    string

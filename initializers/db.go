@@ -37,6 +37,7 @@ func DropTables() {
 	DB.Exec("DROP TABLE IF EXISTS public.couriers;")
 	DB.Exec("DROP TABLE IF EXISTS public.lockers;")
 	DB.Exec("DROP TABLE IF EXISTS public.lockergroups;")
+	DB.Exec("DROP TABLE IF EXIST public.packageslockers")
 }
 
 // Migrating the DB tables into Go models
@@ -48,6 +49,7 @@ func SyncDB() {
 	DB.AutoMigrate(&models.PackageStatus{})
 	DB.AutoMigrate(&models.Locker{})
 	DB.AutoMigrate(&models.LockerGroup{})
+	DB.AutoMigrate(&models.PackageLocker{})
 }
 
 // Generate test datas
@@ -267,4 +269,36 @@ func GenerateTestEntries() {
 		City: "Szombathely",
 	}
 	DB.Create(&lgroup2)
+
+	// PackagesLockers
+
+	pl1 := models.PackageLocker{
+		Package_id: 1,
+		Locker_id:  "010002",
+	}
+	DB.Create(&pl1)
+
+	pl2 := models.PackageLocker{
+		Package_id: 2,
+		Locker_id:  "010001",
+	}
+	DB.Create(&pl2)
+
+	pl3 := models.PackageLocker{
+		Package_id: 3,
+		Locker_id:  "020003",
+	}
+	DB.Create(&pl3)
+
+	pl4 := models.PackageLocker{
+		Package_id: 4,
+		Locker_id:  "010001",
+	}
+	DB.Create(&pl4)
+
+	pl5 := models.PackageLocker{
+		Package_id: 5,
+		Locker_id:  "020003",
+	}
+	DB.Create(&pl5)
 }
