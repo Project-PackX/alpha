@@ -108,7 +108,7 @@ func AddNewPackage(c *fiber.Ctx) error {
 	})
 }
 
-// Remove package with input json {id}
+// Remove package with URL input {id}
 func DeletePackageByID(c *fiber.Ctx) error {
 
 	//Getting the {id} from URL

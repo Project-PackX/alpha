@@ -1,12 +1,18 @@
 package models
 
-import "gorm.io/gorm"
+import (
+	"time"
+
+	"gorm.io/gorm"
+)
 
 // Locker DB table Model
 type Locker struct {
-	gorm.Model
-	Address       string // Address of the locker
-	LockerGroupID uint   // A Lockergroup ID where the locker belongs to
+	ID        string `gorm:"primaryKey"`
+	CreatedAt time.Time
+	UpdatedAt time.Time
+	DeletedAt gorm.DeletedAt `gorm:"index"`
+	Address   string         // Address of the locker
 }
 
 // Name of the Locker structs in the DB
