@@ -1,39 +1,30 @@
 package controllers
 
 import (
+	"PackX/exceptions"
 	"PackX/initializers"
 	"PackX/models"
 
 	"github.com/gofiber/fiber/v2"
 )
 
-// Handy function
-func firstN(s string, n int) string {
-	i := 0
-	for j := range s {
-		if i == n {
-			return s[:j]
-		}
-		i++
-	}
-	return s
-}
-
 // Getting the group city based on the locker id via URL
 func GetCityByLockerID(c *fiber.Ctx) error {
 
 	// Get the {id}. row in Locker table
 	var locker models.Locker
-	initializers.DB.Find(&locker, "id = ?", c.Params("id"))
+	err := initializers.DB.Where("id = ?", c.Params("id")).First(&locker).Error
 
-	//Getting the lockergroup code
-	groupCode := firstN(locker.ID, 2)
+	// Check whether or not there is a locker with the given ID
+	if err != nil {
+		return c.Status(fiber.StatusNotFound).JSON(exceptions.CreateBaseException(err.Error()))
+	}
 
 	// Get the right LockerGroup row
 	var lgroup models.LockerGroup
-	initializers.DB.Find(&lgroup, "id = ?", groupCode)
+	initializers.DB.Find(&lgroup, "id = ?", locker.ID[:2])
 
-	// Sending back the City
+	// Sending back the name of the city
 	return c.Status(fiber.StatusOK).JSON(fiber.Map{
 		"Message": lgroup.City,
 	})
