@@ -3,13 +3,15 @@ package enums
 var Statuses = newStatusEnum()
 
 func newStatusEnum() *statusEnum {
+	// The name of an enum should match the value (rarely in lowercase, if thats the use case)
+	// Good job otherwise ;)
 	return &statusEnum{
-		Dispatch:  "Posted for dispatch",     // Sender to locker
-		Transit:   "In transit to warehouse", // Locker to warehouse
-		Warehouse: "In the warehouse",        // Warehouse
-		Delivery:  "In delivery",             // Warehouse to locker
-		Delivered: "Delivered",               // Locker to receiver
-		Cancelled: "Cancelled",               // Cancelled
+		Dispatch:  "Dispatch",     // Sender to locker
+		Transit:   "Transit",      // Locker to warehouse
+		Warehouse: "In Warehouse", // Warehouse
+		Delivery:  "In Delivery",  // Warehouse to locker
+		Delivered: "Delivered",    // Locker to receiver
+		Canceled:  "Canceled",     // Cancelled
 	}
 }
 
@@ -19,5 +21,5 @@ type statusEnum struct {
 	Warehouse string
 	Delivery  string
 	Delivered string
-	Cancelled string
+	Canceled  string
 }
