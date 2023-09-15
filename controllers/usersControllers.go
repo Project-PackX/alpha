@@ -35,3 +35,31 @@ func RegisterNewUser(c *fiber.Ctx) error {
 		"Message": "User added successfully",
 	})
 }
+
+func Login(c *fiber.Ctx) error {
+
+	// Make a temporary user model with the given json input data
+	loginUser := new(models.User)
+	if err := c.BodyParser(loginUser); err != nil {
+		return c.Status(fiber.StatusBadRequest).JSON(exceptions.CreateInvalidInputException("Something went wrong"))
+	}
+
+	// Getting the credentials from the user
+	login_email := loginUser.Email
+	login_passw := loginUser.Password
+
+	// Search for the email in DB
+	var userMatch models.User
+	initializers.DB.First(&userMatch, "email = ?", login_email)
+
+	// Check the passwords
+	if bcrypt.CompareHashAndPassword([]byte(userMatch.Password), []byte(login_passw)) == nil {
+		return c.Status(fiber.StatusAccepted).JSON(fiber.Map{
+			"Message": "Login successfully",
+		})
+	} else {
+		return c.Status(fiber.StatusNotFound).JSON(fiber.Map{
+			"Message": "Wrong password",
+		})
+	}
+}
