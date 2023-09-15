@@ -162,7 +162,7 @@ func GenerateTestEntries() {
 
 	statusz6 := models.Status{
 		Id:   6,
-		Name: enums.Statuses.Cancelled,
+		Name: enums.Statuses.Canceled,
 	}
 	DB.Create(&statusz6)
 

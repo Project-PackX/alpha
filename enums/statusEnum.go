@@ -11,7 +11,7 @@ func newStatusEnum() *statusEnum {
 		Warehouse: "In Warehouse", // Warehouse
 		Delivery:  "In Delivery",  // Warehouse to locker
 		Delivered: "Delivered",    // Locker to receiver
-		Canceled:  "Canceled",     // Cancelled
+		Canceled:  "Canceled",     // Canceled
 	}
 }
 

@@ -41,13 +41,31 @@ func GetPackagesByLockerID(c *fiber.Ctx) error {
 	initializers.DB.Find(&temp, "locker_id = ?", id)
 
 	// getting a slice of package ids, which are in the locker
-	var packages []uint
+	var ids []uint
 	for i := 0; i < len(temp); i++ {
-		packages = append(packages, temp[i].Package_id)
+		ids = append(ids, temp[i].Package_id)
 	}
 
-	// Sending back the list of package ids
+	// If there are no packages in the locker
+	if ids == nil {
+		return c.Status(fiber.StatusOK).JSON(fiber.Map{
+			"Message": "There are no packages in this locker",
+		})
+	}
+
+	// THe slice of the packages that are in the specific locker
+	var packs []models.Package
+
+	// Execute 'SELECT * FROM public.csomagok' query
+	result := initializers.DB.Find(&packs, ids)
+
+	// Error handling
+	if result.Error != nil {
+		return c.Status(fiber.StatusBadRequest).JSON(exceptions.CreateBaseException("Something went wrong during query"))
+	}
+
+	// Sending back the list of packages with every information
 	return c.Status(fiber.StatusOK).JSON(fiber.Map{
-		"Message": packages,
+		"Message": packs,
 	})
 }
