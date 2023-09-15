@@ -20,6 +20,7 @@ func Routes(app *fiber.App) {
 	csomagok.Get("/:id", controllers.ListPackageByID)            // /api/packages/{id} : Getting the {id}. package details
 	csomagok.Get("/getstatus/:id", controllers.GetPackageStatus) // /api/packages/getstatus/{id} : Getting the {id}. package status
 	csomagok.Post("/change-status", controllers.ChangeStatus)    // /api/packages/change-status : Change a package status via input JSON (ID, NewStatusID)
+	csomagok.Post("/cancel/:id", controllers.MakeCanceled)       // /api/packages/cancel/{id} : Make canceled a package based on pathvariable 'id'
 
 	users := api.Group("/users")
 	users.Post("/register", controllers.RegisterNewUser) // /api/users/register : Register new user via input JSON

@@ -181,3 +181,14 @@ func ChangeStatus(c *fiber.Ctx) error {
 		"Message": "Package status updated successfully",
 	})
 }
+
+func MakeCanceled(c *fiber.Ctx) error {
+	id := c.Params("id")
+
+	initializers.DB.Model(&models.PackageStatus{}).Where("package_id = ?", id).Update("status_id", 6)
+
+	// Return as OK
+	return c.Status(fiber.StatusOK).JSON(fiber.Map{
+		"Message": "Package successfully canceled",
+	})
+}
