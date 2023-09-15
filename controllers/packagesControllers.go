@@ -159,3 +159,25 @@ func ListPackageByID(c *fiber.Ctx) error {
 	c.Status(fiber.StatusOK).JSON(packageData)
 	return nil
 }
+
+// Change a package status via input JSON (ID, NewStatusID)
+func ChangeStatus(c *fiber.Ctx) error {
+
+	// Making a package model with the given parameters
+	newPackage := new(models.PackageStatus)
+
+	// Check error
+	if err := c.BodyParser(newPackage); err != nil {
+		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
+			"Message": "Hibás kérés",
+		})
+	}
+
+	// Update the StatusID based on the ID
+	initializers.DB.Model(&models.PackageStatus{}).Where("package_id = ?", newPackage.Package_id).Update("status_id", newPackage.Status_id)
+
+	// Return as OK
+	return c.Status(fiber.StatusOK).JSON(fiber.Map{
+		"Message": "Package status updated successfully",
+	})
+}

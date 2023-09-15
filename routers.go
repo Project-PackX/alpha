@@ -14,11 +14,12 @@ func Routes(app *fiber.App) {
 
 	csomagok := api.Group("/packages")
 
-	csomagok.Get("", controllers.ListPackages)                   // /api/csomag : Listing all packages
-	csomagok.Post("", controllers.AddNewPackage)                 // /api/csomag : Inserting new package via input json
-	csomagok.Delete("/:id", controllers.DeletePackageByID)       // /api/csomag/{id} : Delete package based on pathvariable 'id'
-	csomagok.Get("/:id", controllers.ListPackageByID)            // /api/csomag/{id} : Getting the {id}. package details
-	csomagok.Get("/getstatus/:id", controllers.GetPackageStatus) // /api/csomag/getstatus/{id} : Getting the {id}. package status
+	csomagok.Get("", controllers.ListPackages)                   // /api/packages : Listing all packages
+	csomagok.Post("", controllers.AddNewPackage)                 // /api/packages : Inserting new package via input json
+	csomagok.Delete("/:id", controllers.DeletePackageByID)       // /api/packages/{id} : Delete package based on pathvariable 'id'
+	csomagok.Get("/:id", controllers.ListPackageByID)            // /api/packages/{id} : Getting the {id}. package details
+	csomagok.Get("/getstatus/:id", controllers.GetPackageStatus) // /api/packages/getstatus/{id} : Getting the {id}. package status
+	csomagok.Post("/change-status", controllers.ChangeStatus)    // /api/packages/change-status : Change a package status via input JSON (ID, NewStatusID)
 
 	users := api.Group("/users")
 	users.Post("/register", controllers.RegisterNewUser) // /api/users/register : Register new user via input JSON
