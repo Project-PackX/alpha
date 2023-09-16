@@ -4,6 +4,7 @@ import (
 	"PackX/exceptions"
 	"PackX/initializers"
 	"PackX/models"
+	"math"
 
 	"github.com/gofiber/fiber/v2"
 )
@@ -67,5 +68,34 @@ func GetPackagesByLockerID(c *fiber.Ctx) error {
 	// Sending back the list of packages with every information
 	return c.Status(fiber.StatusOK).JSON(fiber.Map{
 		"Message": packs,
+	})
+}
+
+// Get the fullness of a locker based on URL
+func GetFullness(c *fiber.Ctx) error {
+
+	// Getting the id from URL
+	id := c.Params("id")
+
+	// Getting the locker's capacity
+	var locker models.Locker
+	initializers.DB.Where("id = ?", id).First(&locker)
+
+	cap := locker.Capacity
+
+	// Getting the number of packages in the locker
+	var temp []models.PackageLocker
+	initializers.DB.Find(&temp, "locker_id = ?", id)
+
+	nPackages := len(temp)
+
+	percent := float64(nPackages) / float64(cap)
+	percent = math.Round(percent * 100)
+
+	// Return the datas
+	return c.Status(fiber.StatusOK).JSON(fiber.Map{
+		"Capacity":      cap,
+		"PackageNumber": nPackages,
+		"Percent":       percent,
 	})
 }

@@ -30,8 +30,9 @@ func Routes(app *fiber.App) {
 	// users.Get("/:id/packages", controller.GetPackagesUnderUser) // /api/users/{id}/packages : Get all packages under user
 
 	lockers := api.Group("/lockers")
-	lockers.Get("/get-city/:id", controllers.GetCityByLockerID) // /api/lockers/{id} : Get the name of the city where the locker is located at
-	lockers.Get("/get-packages/:id", controllers.GetPackagesByLockerID)
+	lockers.Get("/get-city/:id", controllers.GetCityByLockerID)         // /api/lockers/get-city/{id} : Get the name of the city where the locker is located at
+	lockers.Get("/get-packages/:id", controllers.GetPackagesByLockerID) // /api/lockers/get-packages/{id} : Get all the information about the packages that are in the {id}. locker
+	lockers.Get("/get-fullness/:id", controllers.GetFullness)           // /api/lockers/get-fullness/{id} : Get the fullness stats (cap, number of package, percentage) of the {id}. locker
 
 	/* I guess we don't need this anymore, but I leave it here
 	lockers.Get("/lockers-by-group/:groupid", controllers.ListLockersByGroup) // /api/lockers/lockers-by-group/{groupid} : List all the lockers in the {groupid} group

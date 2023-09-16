@@ -218,44 +218,51 @@ func GenerateTestEntries() {
 	// Lockers
 
 	locker1 := models.Locker{
-		ID:      "010001",
-		Address: "Szent István út 23.",
+		ID:       "010001",
+		Address:  "Szent István út 23.",
+		Capacity: 7,
 	}
 	DB.Create(&locker1)
 
 	locker2 := models.Locker{
-		ID:      "010002",
-		Address: "Kiss Ernő utca 5.",
+		ID:       "010002",
+		Address:  "Kiss Ernő utca 5.",
+		Capacity: 5,
 	}
 	DB.Create(&locker2)
 
 	locker3 := models.Locker{
-		ID:      "010003",
-		Address: "Lomnic utca 30.",
+		ID:       "010003",
+		Address:  "Lomnic utca 30.",
+		Capacity: 5,
 	}
 	DB.Create(&locker3)
 
 	locker4 := models.Locker{
-		ID:      "020001",
-		Address: "Paragvári utca 74.",
+		ID:       "020001",
+		Address:  "Paragvári utca 74.",
+		Capacity: 5,
 	}
 	DB.Create(&locker4)
 
 	locker5 := models.Locker{
-		ID:      "020002",
-		Address: "Gömör utca 3.",
+		ID:       "020002",
+		Address:  "Gömör utca 3.",
+		Capacity: 5,
 	}
 	DB.Create(&locker5)
 
 	locker6 := models.Locker{
-		ID:      "020003",
-		Address: "Éhen Gyula tér 3.",
+		ID:       "020003",
+		Address:  "Éhen Gyula tér 3.",
+		Capacity: 10,
 	}
 	DB.Create(&locker6)
 
 	locker7 := models.Locker{
-		ID:      "020004",
-		Address: "Sziget utca 7.",
+		ID:       "020004",
+		Address:  "Sziget utca 7.",
+		Capacity: 15,
 	}
 	DB.Create(&locker7)
 
