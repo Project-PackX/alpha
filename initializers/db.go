@@ -58,26 +58,29 @@ func GenerateTestEntries() {
 	// Users
 
 	felh1 := models.User{
-		Name:    "Kovács Bea",
-		Address: "Liliom utca 4.",
-		Phone:   "+36201956673",
-		Email:   "k.bea@mail.com",
+		Name:        "Kovács Bea",
+		Address:     "Liliom utca 4.",
+		Phone:       "+36201956673",
+		Email:       "k.bea@mail.com",
+		AccessLevel: enums.AccessLevel.Normal,
 	}
 	DB.Create(&felh1)
 
 	felh2 := models.User{
-		Name:    "Szalma Géza",
-		Address: "Egressy körút 58.",
-		Phone:   "+36605385438",
-		Email:   "szalmag@mail.com",
+		Name:        "Szalma Géza",
+		Address:     "Egressy körút 58.",
+		Phone:       "+36605385438",
+		Email:       "szalmag@mail.com",
+		AccessLevel: enums.AccessLevel.Normal,
 	}
 	DB.Create(&felh2)
 
 	felh3 := models.User{
-		Name:    "Veres Péter",
-		Address: "Malom út 12.",
-		Phone:   "+36504098931",
-		Email:   "vrsptr@mail.com",
+		Name:        "Veres Péter",
+		Address:     "Malom út 12.",
+		Phone:       "+36504098931",
+		Email:       "vrsptr@mail.com",
+		AccessLevel: enums.AccessLevel.Admin,
 	}
 	DB.Create(&felh3)
 

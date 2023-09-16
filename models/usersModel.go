@@ -15,12 +15,13 @@ type User struct {
 		    UpdatedAt time.Time
 		    DeletedAt gorm.DeletedAt `gorm:"index"`
 	*/
-	Name     string
-	Address  string
-	Phone    string
-	Email    string
-	Password string
-	Packages []Package
+	Name        string
+	Address     string
+	Phone       string
+	Email       string
+	Password    string
+	AccessLevel uint
+	Packages    []Package
 }
 
 // UserRequest DTO for incoming request bodies
