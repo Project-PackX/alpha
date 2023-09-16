@@ -32,10 +32,9 @@ func Routes(app *fiber.App) {
 		Until we find a better approach for this accesslevel problem...
 		Should we send a number, or string, maybe create a new DB table with these pairs?
 	*/
+	users.Get("/:id/packages", controllers.GetPackagesUnderUser) // /api/users/{id}/packages : Get all packages which the {id}. user sent
 
 	// users.Get("/packages", controllers.GetPackagesUnderUsers) "// csomagok.Get("/uwp", controllers.ListUsersWithPackages" Instead of this, use the users/packages or just get all of the packages
-	// if you want to get a specific user's packages, refer to the next one
-	// users.Get("/:id/packages", controller.GetPackagesUnderUser) // /api/users/{id}/packages : Get all packages under user
 
 	lockers := api.Group("/lockers")
 	lockers.Get("/get-city/:id", controllers.GetCityByLockerID)         // /api/lockers/get-city/{id} : Get the name of the city where the locker is located at

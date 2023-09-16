@@ -78,3 +78,19 @@ func GetAccessLevel(c *fiber.Ctx) error {
 		"Message": user.AccessLevel,
 	})
 }
+
+// Get all package info wchich belong to the specific user id based on URL
+func GetPackagesUnderUser(c *fiber.Ctx) error {
+
+	// Getting the {id} from URL
+	id := c.Params("id")
+
+	// Getting the packs from the desired user
+	var packs []models.Package
+	initializers.DB.Find(&packs, "user_id = ?", id)
+
+	// Sending back the list of packages with every information
+	return c.Status(fiber.StatusOK).JSON(fiber.Map{
+		"Message": packs,
+	})
+}
