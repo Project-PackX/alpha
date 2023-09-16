@@ -63,3 +63,18 @@ func Login(c *fiber.Ctx) error {
 		})
 	}
 }
+
+// Get the access of the user based on URL {id}
+func GetAccessLevel(c *fiber.Ctx) error {
+
+	id := c.Params("id")
+
+	// Get the user with the given id
+	var user models.User
+	initializers.DB.First(&user, "id = ?", id)
+
+	// Return the value
+	return c.Status(fiber.StatusOK).JSON(fiber.Map{
+		"Message": user.AccessLevel,
+	})
+}

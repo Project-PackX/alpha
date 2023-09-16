@@ -24,7 +24,15 @@ func Routes(app *fiber.App) {
 
 	users := api.Group("/users")
 	users.Post("/register", controllers.RegisterNewUser) // /api/users/register : Register new user via input JSON
-	users.Post("/login", controllers.Login)
+
+	// What's the plan for this? How to integrate?
+	users.Post("/login", controllers.Login)                       // /api/users/login : Login user
+	users.Get("/get-accesslevel/:id", controllers.GetAccessLevel) // /api/users/get-accesslevel/{id} : Get the access level of the {id}. user
+	/*
+		Until we find a better approach for this accesslevel problem...
+		Should we send a number, or string, maybe create a new DB table with these pairs?
+	*/
+
 	// users.Get("/packages", controllers.GetPackagesUnderUsers) "// csomagok.Get("/uwp", controllers.ListUsersWithPackages" Instead of this, use the users/packages or just get all of the packages
 	// if you want to get a specific user's packages, refer to the next one
 	// users.Get("/:id/packages", controller.GetPackagesUnderUser) // /api/users/{id}/packages : Get all packages under user
