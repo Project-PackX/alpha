@@ -4,6 +4,7 @@ import (
 	"PackX/initializers"
 	"PackX/models"
 	"database/sql"
+	"math/rand"
 
 	"github.com/gofiber/fiber/v2"
 )
@@ -91,6 +92,12 @@ func AddNewPackage(c *fiber.Ctx) error {
 			"Message": "Hibás kérés",
 		})
 	}
+
+	// Generate a random 6 digit number for the package code
+	randomNumber := rand.Intn(900000) + 100000
+
+	// Insert the generated code to the model
+	csomag.Code = uint(randomNumber)
 
 	// Inserting the new package
 	result := initializers.DB.Create(&csomag)
