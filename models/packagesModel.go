@@ -1,6 +1,9 @@
 package models
 
-import "gorm.io/gorm"
+import (
+	"gorm.io/gorm"
+	"time"
+)
 
 // Package DB table model
 type Package struct {
@@ -19,6 +22,7 @@ type Package struct {
 	Size                string  // Could be small, medium or large
 	Price               float64 // Delivery fee (how to calculate?)
 	Code                uint    // Code to open the locker (both sender and receiver) - random 6 digit number maybe?
+	DeliveryDate		time.Time // Date when the package arrives
 	Note                string  // Extra note
 	CourierID           uint    // Courier's id who delivers the package (can be different from send. locker to warehouse and warehouse to dest. locker?)
 }

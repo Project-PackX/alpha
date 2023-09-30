@@ -5,6 +5,7 @@ import (
 	"PackX/models"
 	"database/sql"
 	"math/rand"
+	"time"
 
 	"github.com/gofiber/fiber/v2"
 )
@@ -98,6 +99,12 @@ func AddNewPackage(c *fiber.Ctx) error {
 
 	// Insert the generated code to the model
 	csomag.Code = uint(randomNumber)
+
+	// Generate delivery date
+	ddate := time.Now()
+	ddate = ddate.Add(time.Hour * 5 * 24) // Add 5 days
+
+	csomag.DeliveryDate = ddate
 
 	// Inserting the new package
 	result := initializers.DB.Create(&csomag)
