@@ -10,6 +10,17 @@ import (
 	"github.com/gofiber/fiber/v2"
 )
 
+// Generate a random string (letters + numbers) with the given length
+func randomString(length int) string {
+	characters := []byte("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789")
+	bytes := make([]byte, length)
+	for i := range bytes {
+		bytes[i] = characters[rand.Intn(len(characters))]
+	}
+
+	return string(bytes)
+}
+
 // Just load a test html page
 func PostsIndex(c *fiber.Ctx) error {
 	return c.Render("packs/index", fiber.Map{})
@@ -95,16 +106,17 @@ func AddNewPackage(c *fiber.Ctx) error {
 	}
 
 	// Generate a random 6 digit number for the package code
-	randomNumber := rand.Intn(900000) + 100000
-
-	// Insert the generated code to the model
-	csomag.Code = uint(randomNumber)
+	pcode := randomString(6)
+	csomag.Code = pcode
 
 	// Generate delivery date
 	ddate := time.Now()
 	ddate = ddate.Add(time.Hour * 5 * 24) // Add 5 days
-
 	csomag.DeliveryDate = ddate
+
+	// Generate TrackID
+	trackid := randomString(10)
+	csomag.TrackID = trackid
 
 	// Inserting the new package
 	result := initializers.DB.Create(&csomag)
