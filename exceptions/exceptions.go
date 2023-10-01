@@ -3,8 +3,8 @@ package exceptions
 import "time"
 
 type baseException struct {
-	Message   string `json:"message"`
-	TimeStamp string `json:"timestamp"`
+	Message   string `json:"Message"`
+	TimeStamp string `json:"Timestamp"`
 }
 
 func CreateBaseException(message string) baseException {

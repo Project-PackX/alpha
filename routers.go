@@ -2,6 +2,7 @@ package main
 
 import (
 	"PackX/controllers"
+	"PackX/middleware"
 
 	"github.com/gofiber/fiber/v2"
 )
@@ -12,21 +13,24 @@ func Routes(app *fiber.App) {
 
 	api := app.Group("/api")
 
-	csomagok := api.Group("/packages")
+	packages := api.Group("/packages")
 
-	csomagok.Get("", controllers.ListPackages)                   // /api/packages : Listing all packages
-	csomagok.Post("", controllers.AddNewPackage)                 // /api/packages : Inserting new package via input json
-	csomagok.Delete("/:id", controllers.DeletePackageByID)       // /api/packages/{id} : Delete package based on pathvariable 'id'
-	csomagok.Get("/:id", controllers.ListPackageByID)            // /api/packages/{id} : Getting the {id}. package details
-	csomagok.Get("/getstatus/:id", controllers.GetPackageStatus) // /api/packages/getstatus/{id} : Getting the {id}. package status
-	csomagok.Post("/change-status", controllers.ChangeStatus)    // /api/packages/change-status : Change a package status via input JSON (ID, NewStatusID)
-	csomagok.Post("/cancel/:id", controllers.MakeCanceled)       // /api/packages/cancel/{id} : Make canceled a package based on pathvariable 'id'
+	packages.Use(middleware.RequireJwtTokenAuth)
+	packages.Get("", controllers.ListPackages)                   // /api/packages : Listing all packages
+	packages.Post("", controllers.AddNewPackage)                 // /api/packages : Inserting new package via input json
+	packages.Delete("/:id", controllers.DeletePackageByID)       // /api/packages/{id} : Delete package based on pathvariable 'id'
+	packages.Get("/:id", controllers.ListPackageByID)            // /api/packages/{id} : Getting the {id}. package details
+	packages.Get("/getstatus/:id", controllers.GetPackageStatus) // /api/packages/getstatus/{id} : Getting the {id}. package status
+	packages.Post("/change-status", controllers.ChangeStatus)    // /api/packages/change-status : Change a package status via input JSON (ID, NewStatusID)
+	packages.Post("/cancel/:id", controllers.MakeCanceled)       // /api/packages/cancel/{id} : Make canceled a package based on pathvariable 'id'
 
 	users := api.Group("/users")
 	users.Post("/register", controllers.RegisterNewUser) // /api/users/register : Register new user via input JSON
 
 	// What's the plan for this? How to integrate?
-	users.Post("/login", controllers.Login)                       // /api/users/login : Login user
+	users.Post("/login", controllers.Login) // /api/users/login : Login user
+
+	users.Use(middleware.RequireJwtTokenAuth)
 	users.Get("/get-accesslevel/:id", controllers.GetAccessLevel) // /api/users/get-accesslevel/{id} : Get the access level of the {id}. user
 	/*
 		Until we find a better approach for this accesslevel problem...

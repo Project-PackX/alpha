@@ -11,7 +11,7 @@ import (
 
 func init() {
 	initializers.LoadEnvVariables()  // Loading environment variables (port, database)
-	initializers.ConnectToDatabase() // Conencting to database based on env vars
+	initializers.ConnectToDatabase() // Connecting to database based on env vars
 
 	// FOR TESTING PURPOSES
 	initializers.DropTables()
@@ -57,7 +57,6 @@ func main() {
 
 	// Configure the application
 	app.Static("/", "./public")
-	//app.Use(middleware.RequireAuth)
 
 	// Endpoints management via function
 	Routes(app)
