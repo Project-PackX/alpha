@@ -5,6 +5,7 @@ import (
 	"PackX/models"
 	"fmt"
 	"os"
+	"time"
 
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
@@ -92,6 +93,7 @@ func GenerateTestEntries() {
 		Price:     37990,
 		Note:      "Utánvét",
 		CourierID: 1,
+		DeliveryDate: time.Now().Add(time.Hour * 24 * 5),
 	}
 	DB.Create(&csomag1)
 
@@ -101,6 +103,7 @@ func GenerateTestEntries() {
 		Price:     225000,
 		Note:      "Javítás",
 		CourierID: 1,
+		DeliveryDate: time.Now().Add(time.Hour * 24 * 5),
 	}
 	DB.Create(&csomag2)
 
@@ -110,6 +113,7 @@ func GenerateTestEntries() {
 		Price:     17490,
 		Note:      "-",
 		CourierID: 2,
+		DeliveryDate: time.Now().Add(time.Hour * 24 * 5),
 	}
 	DB.Create(&csomag3)
 
@@ -119,6 +123,7 @@ func GenerateTestEntries() {
 		Price:     3989,
 		Note:      "Cserekészülék",
 		CourierID: 2,
+		DeliveryDate: time.Now().Add(time.Hour * 24 * 5),
 	}
 	DB.Create(&csomag4)
 
@@ -128,6 +133,7 @@ func GenerateTestEntries() {
 		Price:     55990,
 		Note:      "-",
 		CourierID: 1,
+		DeliveryDate: time.Now().Add(time.Hour * 24 * 5),
 	}
 	DB.Create(&csomag5)
 
