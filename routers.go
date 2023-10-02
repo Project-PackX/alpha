@@ -2,7 +2,6 @@ package main
 
 import (
 	"PackX/controllers"
-	"PackX/middleware"
 
 	"github.com/gofiber/fiber/v2"
 )
@@ -15,7 +14,7 @@ func Routes(app *fiber.App) {
 
 	packages := api.Group("/packages")
 
-	packages.Use(middleware.RequireJwtTokenAuth)
+	//packages.Use(middleware.RequireJwtTokenAuth) -- TEMP for testing
 	packages.Get("", controllers.ListPackages)                   // /api/packages : Listing all packages
 	packages.Post("", controllers.AddNewPackage)                 // /api/packages : Inserting new package via input json
 	packages.Delete("/:id", controllers.DeletePackageByID)       // /api/packages/{id} : Delete package based on pathvariable 'id'
@@ -30,7 +29,7 @@ func Routes(app *fiber.App) {
 	// What's the plan for this? How to integrate?
 	users.Post("/login", controllers.Login) // /api/users/login : Login user
 
-	users.Use(middleware.RequireJwtTokenAuth)
+	//users.Use(middleware.RequireJwtTokenAuth) -- TEMP for testing
 	users.Get("/get-accesslevel/:id", controllers.GetAccessLevel) // /api/users/get-accesslevel/{id} : Get the access level of the {id}. user
 	/*
 		Until we find a better approach for this accesslevel problem...

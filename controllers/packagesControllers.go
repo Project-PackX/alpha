@@ -166,6 +166,15 @@ func ListPackageByID(c *fiber.Ctx) error {
 	var packageData *models.Package
 	err := initializers.DB.Where("id = ?", id).First(&packageData).Error
 
+	// Search for Status
+	// Getting the package status code from the packagestatus table
+	var statusindex models.PackageStatus
+	initializers.DB.Find(&statusindex, "package_id = ?", id)
+
+	// Getting the right status row in the status table
+	var statusname models.Status
+	initializers.DB.Find(&statusname, "id = ?", statusindex.Status_id)
+
 	// Error handling
 	if err != nil {
 		// If there are no package with that {id}
@@ -182,7 +191,10 @@ func ListPackageByID(c *fiber.Ctx) error {
 	}
 
 	// Return as OK
-	c.Status(fiber.StatusOK).JSON(packageData)
+	c.Status(fiber.StatusOK).JSON(fiber.Map{
+		"Data":   packageData,
+		"Status": statusname.Name,
+	})
 	return nil
 }
 
