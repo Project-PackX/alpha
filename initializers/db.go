@@ -88,54 +88,64 @@ func GenerateTestEntries() {
 	// Packages
 
 	csomag1 := models.Package{
-		UserID:    2,
-		Size:      enums.Sizes.Medium,
-		Price:     37990,
-		Note:      "Utánvét",
-		CourierID: 1,
+		UserID:       2,
+		Size:         enums.Sizes.Medium,
+		Price:        37990,
+		Note:         "Utánvét",
+		CourierID:    1,
 		DeliveryDate: time.Now().Add(time.Hour * 24 * 5),
 	}
 	DB.Create(&csomag1)
 
 	csomag2 := models.Package{
-		UserID:    1,
-		Size:      enums.Sizes.Small,
-		Price:     225000,
-		Note:      "Javítás",
-		CourierID: 1,
+		UserID:       1,
+		Size:         enums.Sizes.Small,
+		Price:        225000,
+		Note:         "Javítás",
+		CourierID:    1,
 		DeliveryDate: time.Now().Add(time.Hour * 24 * 5),
 	}
 	DB.Create(&csomag2)
 
 	csomag3 := models.Package{
-		UserID:    2,
-		Size:      enums.Sizes.Medium,
-		Price:     17490,
-		Note:      "-",
-		CourierID: 2,
+		UserID:       2,
+		Size:         enums.Sizes.Medium,
+		Price:        17490,
+		Note:         "-",
+		CourierID:    2,
 		DeliveryDate: time.Now().Add(time.Hour * 24 * 5),
 	}
 	DB.Create(&csomag3)
 
 	csomag4 := models.Package{
-		UserID:    3,
-		Size:      enums.Sizes.Small,
-		Price:     3989,
-		Note:      "Cserekészülék",
-		CourierID: 2,
+		UserID:       3,
+		Size:         enums.Sizes.Small,
+		Price:        3989,
+		Note:         "Cserekészülék",
+		CourierID:    2,
 		DeliveryDate: time.Now().Add(time.Hour * 24 * 5),
 	}
 	DB.Create(&csomag4)
 
 	csomag5 := models.Package{
-		UserID:    1,
-		Size:      enums.Sizes.Large,
-		Price:     55990,
-		Note:      "-",
-		CourierID: 1,
+		UserID:       1,
+		Size:         enums.Sizes.Large,
+		Price:        55990,
+		Note:         "-",
+		CourierID:    1,
 		DeliveryDate: time.Now().Add(time.Hour * 24 * 5),
 	}
 	DB.Create(&csomag5)
+
+	csomag6 := models.Package{
+		UserID:       1,
+		Size:         enums.Sizes.Small,
+		Price:        3490,
+		Note:         "-",
+		CourierID:    2,
+		DeliveryDate: time.Now().Add(time.Hour * 24 * 5),
+	}
+	DB.Create(&csomag6)
 
 	// Possible package statuses
 
@@ -197,7 +207,7 @@ func GenerateTestEntries() {
 
 	csomagstatusz4 := models.PackageStatus{
 		Package_id: 4,
-		Status_id:  4,
+		Status_id:  5,
 	}
 	DB.Create(&csomagstatusz4)
 
