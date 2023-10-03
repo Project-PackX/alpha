@@ -2,6 +2,7 @@ package main
 
 import (
 	"PackX/controllers"
+	"PackX/middleware"
 
 	"github.com/gofiber/fiber/v2"
 )
@@ -14,11 +15,14 @@ func Routes(app *fiber.App) {
 
 	packages := api.Group("/packages")
 
-	//packages.Use(middleware.RequireJwtTokenAuth) -- TEMP for testing
+	packages.Get("/:id", controllers.ListPackageByID) // /api/packages/{id} : Getting the {id}. package details
+
+	// From this point, all package endpoints are being authenticated
+	packages.Use(middleware.RequireJwtTokenAuth)
+
 	packages.Get("", controllers.ListPackages)                   // /api/packages : Listing all packages
 	packages.Post("", controllers.AddNewPackage)                 // /api/packages : Inserting new package via input json
 	packages.Delete("/:id", controllers.DeletePackageByID)       // /api/packages/{id} : Delete package based on pathvariable 'id'
-	packages.Get("/:id", controllers.ListPackageByID)            // /api/packages/{id} : Getting the {id}. package details
 	packages.Get("/getstatus/:id", controllers.GetPackageStatus) // /api/packages/getstatus/{id} : Getting the {id}. package status
 	packages.Post("/change-status", controllers.ChangeStatus)    // /api/packages/change-status : Change a package status via input JSON (ID, NewStatusID)
 	packages.Post("/cancel/:id", controllers.MakeCanceled)       // /api/packages/cancel/{id} : Make canceled a package based on pathvariable 'id'
@@ -26,10 +30,11 @@ func Routes(app *fiber.App) {
 	users := api.Group("/users")
 	users.Post("/register", controllers.RegisterNewUser) // /api/users/register : Register new user via input JSON
 
-	// What's the plan for this? How to integrate?
 	users.Post("/login", controllers.Login) // /api/users/login : Login user
 
-	//users.Use(middleware.RequireJwtTokenAuth) -- TEMP for testing
+	// From this point, all user endpoints are being authenticated
+	users.Use(middleware.RequireJwtTokenAuth)
+
 	users.Get("/get-accesslevel/:id", controllers.GetAccessLevel) // /api/users/get-accesslevel/{id} : Get the access level of the {id}. user
 	/*
 		Until we find a better approach for this accesslevel problem...
@@ -40,6 +45,10 @@ func Routes(app *fiber.App) {
 	// users.Get("/packages", controllers.GetPackagesUnderUsers) "// csomagok.Get("/uwp", controllers.ListUsersWithPackages" Instead of this, use the users/packages or just get all of the packages
 
 	lockers := api.Group("/lockers")
+
+	// From this point, all locker endpoints are being authenticated
+	lockers.Use(middleware.RequireJwtTokenAuth)
+
 	lockers.Get("/get-city/:id", controllers.GetCityByLockerID)         // /api/lockers/get-city/{id} : Get the name of the city where the locker is located at
 	lockers.Get("/get-packages/:id", controllers.GetPackagesByLockerID) // /api/lockers/get-packages/{id} : Get all the information about the packages that are in the {id}. locker
 	lockers.Get("/get-fullness/:id", controllers.GetFullness)           // /api/lockers/get-fullness/{id} : Get the fullness stats (cap, number of package, percentage) of the {id}. locker

@@ -16,7 +16,7 @@ func RequireJwtTokenAuth(c *fiber.Ctx) error {
 	tokenString := c.Get("Authorization")
 
 	if tokenString == "" {
-		return c.Status(fiber.StatusUnauthorized).JSON(fiber.Map{"Message": "Unauthorized"})
+		return c.Status(fiber.StatusUnauthorized).JSON(fiber.Map{"message": "Unauthorized"})
 	}
 
 	token, err := jwt.Parse(tokenString, func(token *jwt.Token) (interface{}, error) {
@@ -26,7 +26,7 @@ func RequireJwtTokenAuth(c *fiber.Ctx) error {
 		// If expired
 		exp := claims["exp"].(float64)
 		if exp <= float64(time.Now().Unix()) {
-			return nil, c.Status(fiber.StatusUnauthorized).JSON(fiber.Map{"Message": "Unauthorized"})
+			return nil, c.Status(fiber.StatusUnauthorized).JSON(fiber.Map{"message": "Unauthorized"})
 		}
 
 		// If user does not exist
@@ -34,14 +34,14 @@ func RequireJwtTokenAuth(c *fiber.Ctx) error {
 		var foundUser models.User
 		initializers.DB.First(&foundUser, "id = ?", userId)
 		if foundUser.ID == 0 {
-			return nil, c.Status(fiber.StatusUnauthorized).JSON(fiber.Map{"Message": "Unauthorized"})
+			return nil, c.Status(fiber.StatusUnauthorized).JSON(fiber.Map{"message": "Unauthorized"})
 		}
 
 		return SecretKey, nil
 	})
 
 	if err != nil || !token.Valid {
-		return c.Status(fiber.StatusUnauthorized).JSON(fiber.Map{"Message": "Unauthorized"})
+		return c.Status(fiber.StatusUnauthorized).JSON(fiber.Map{"message": "Unauthorized"})
 	}
 
 	// Token is valid; proceed with the request
