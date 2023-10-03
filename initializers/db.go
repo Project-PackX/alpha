@@ -1,9 +1,11 @@
 package initializers
 
 import (
+	"PackX/enums"
 	"PackX/models"
 	"fmt"
 	"os"
+	"time"
 
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
@@ -36,6 +38,7 @@ func DropTables() {
 	DB.Exec("DROP TABLE IF EXISTS public.couriers;")
 	DB.Exec("DROP TABLE IF EXISTS public.lockers;")
 	DB.Exec("DROP TABLE IF EXISTS public.lockergroups;")
+	DB.Exec("DROP TABLE IF EXIST public.packageslockers")
 }
 
 // Migrating the DB tables into Go models
@@ -47,6 +50,7 @@ func SyncDB() {
 	DB.AutoMigrate(&models.PackageStatus{})
 	DB.AutoMigrate(&models.Locker{})
 	DB.AutoMigrate(&models.LockerGroup{})
+	DB.AutoMigrate(&models.PackageLocker{})
 }
 
 // Generate test datas
@@ -55,116 +59,129 @@ func GenerateTestEntries() {
 	// Users
 
 	felh1 := models.User{
-		Name:    "Kovács Bea",
-		Address: "Liliom utca 4.",
-		Phone:   "+36201956673",
-		Email:   "k.bea@mail.com",
+		Name:        "Kovács Bea",
+		Address:     "Liliom utca 4.",
+		Phone:       "+36201956673",
+		Email:       "k.bea@mail.com",
+		AccessLevel: enums.AccessLevel.Normal,
 	}
 	DB.Create(&felh1)
 
 	felh2 := models.User{
-		Name:    "Szalma Géza",
-		Address: "Egressy körút 58.",
-		Phone:   "+36605385438",
-		Email:   "szalmag@mail.com",
+		Name:        "Szalma Géza",
+		Address:     "Egressy körút 58.",
+		Phone:       "+36605385438",
+		Email:       "szalmag@mail.com",
+		AccessLevel: enums.AccessLevel.Normal,
 	}
 	DB.Create(&felh2)
 
 	felh3 := models.User{
-		Name:    "Veres Péter",
-		Address: "Malom út 12.",
-		Phone:   "+36504098931",
-		Email:   "vrsptr@mail.com",
+		Name:        "Veres Péter",
+		Address:     "Malom út 12.",
+		Phone:       "+36504098931",
+		Email:       "vrsptr@mail.com",
+		AccessLevel: enums.AccessLevel.Admin,
 	}
 	DB.Create(&felh3)
 
 	// Packages
 
 	csomag1 := models.Package{
-		UserID:             2,
-		DestinationAddress: "Szikra utca 26. II/28",
-		Content:            "Cipő",
-		Price:              37990,
-		Note:               "Utánvét",
-		CourierID:          1,
+		UserID:       2,
+		Size:         enums.Sizes.Medium,
+		Price:        37990,
+		Note:         "Utánvét",
+		CourierID:    1,
+		DeliveryDate: time.Now().Add(time.Hour * 24 * 5),
 	}
 	DB.Create(&csomag1)
 
 	csomag2 := models.Package{
-		UserID:             1,
-		DestinationAddress: "Szendrei Lipót sétány 40.",
-		Content:            "Laptop",
-		Price:              225000,
-		Note:               "Javítás",
-		CourierID:          1,
+		UserID:       1,
+		Size:         enums.Sizes.Small,
+		Price:        225000,
+		Note:         "Javítás",
+		CourierID:    1,
+		DeliveryDate: time.Now().Add(time.Hour * 24 * 5),
 	}
 	DB.Create(&csomag2)
 
 	csomag3 := models.Package{
-		UserID:             2,
-		DestinationAddress: "Nagy István út 81.",
-		Content:            "Kabát",
-		Price:              17490,
-		Note:               "-",
-		CourierID:          2,
+		UserID:       2,
+		Size:         enums.Sizes.Medium,
+		Price:        17490,
+		Note:         "-",
+		CourierID:    2,
+		DeliveryDate: time.Now().Add(time.Hour * 24 * 5),
 	}
 	DB.Create(&csomag3)
 
 	csomag4 := models.Package{
-		UserID:             3,
-		DestinationAddress: "Kő utca 5.",
-		Content:            "25W töltőfej",
-		Price:              3989,
-		Note:               "Cserekészülék",
-		CourierID:          2,
+		UserID:       3,
+		Size:         enums.Sizes.Small,
+		Price:        3989,
+		Note:         "Cserekészülék",
+		CourierID:    2,
+		DeliveryDate: time.Now().Add(time.Hour * 24 * 5),
 	}
 	DB.Create(&csomag4)
 
 	csomag5 := models.Package{
-		UserID:             1,
-		DestinationAddress: "Rózsavölgy körút 67/B",
-		Content:            "Bútor",
-		Price:              55990,
-		Note:               "-",
-		CourierID:          1,
+		UserID:       1,
+		Size:         enums.Sizes.Large,
+		Price:        55990,
+		Note:         "-",
+		CourierID:    1,
+		DeliveryDate: time.Now().Add(time.Hour * 24 * 5),
 	}
 	DB.Create(&csomag5)
+
+	csomag6 := models.Package{
+		UserID:       1,
+		Size:         enums.Sizes.Small,
+		Price:        3490,
+		Note:         "-",
+		CourierID:    2,
+		DeliveryDate: time.Now().Add(time.Hour * 24 * 5),
+	}
+	DB.Create(&csomag6)
 
 	// Possible package statuses
 
 	statusz1 := models.Status{
 		Id:   1,
-		Name: "Feladva",
+		Name: enums.Statuses.Dispatch,
 	}
 	DB.Create(&statusz1)
 
 	statusz2 := models.Status{
 		Id:   2,
-		Name: "Átvéve",
+		Name: enums.Statuses.Transit,
 	}
 	DB.Create(&statusz2)
 
 	statusz3 := models.Status{
 		Id:   3,
-		Name: "Raktárban",
+		Name: enums.Statuses.Warehouse,
 	}
 	DB.Create(&statusz3)
 
 	statusz4 := models.Status{
 		Id:   4,
-		Name: "Szállítás alatt",
+		Name: enums.Statuses.Delivery,
 	}
 	DB.Create(&statusz4)
 
 	statusz5 := models.Status{
 		Id:   5,
-		Name: "Kézbesítve",
+		Name: enums.Statuses.Delivered,
 	}
 	DB.Create(&statusz5)
 
 	statusz6 := models.Status{
 		Id:   6,
-		Name: "Törölve",
+		Name: enums.Statuses.Canceled,
 	}
 	DB.Create(&statusz6)
 
@@ -190,7 +207,7 @@ func GenerateTestEntries() {
 
 	csomagstatusz4 := models.PackageStatus{
 		Package_id: 4,
-		Status_id:  4,
+		Status_id:  5,
 	}
 	DB.Create(&csomagstatusz4)
 
@@ -217,44 +234,51 @@ func GenerateTestEntries() {
 	// Lockers
 
 	locker1 := models.Locker{
-		Address:       "Szent István út 23.",
-		LockerGroupID: 1,
+		ID:       "010001",
+		Address:  "Szent István út 23.",
+		Capacity: 7,
 	}
 	DB.Create(&locker1)
 
 	locker2 := models.Locker{
-		Address:       "Kiss Ernő utca 5.",
-		LockerGroupID: 1,
+		ID:       "010002",
+		Address:  "Kiss Ernő utca 5.",
+		Capacity: 5,
 	}
 	DB.Create(&locker2)
 
 	locker3 := models.Locker{
-		Address:       "Lomnic utca 30.",
-		LockerGroupID: 1,
+		ID:       "010003",
+		Address:  "Lomnic utca 30.",
+		Capacity: 5,
 	}
 	DB.Create(&locker3)
 
 	locker4 := models.Locker{
-		Address:       "Paragvári utca 74.",
-		LockerGroupID: 2,
+		ID:       "020001",
+		Address:  "Paragvári utca 74.",
+		Capacity: 5,
 	}
 	DB.Create(&locker4)
 
 	locker5 := models.Locker{
-		Address:       "Gömör utca 3.",
-		LockerGroupID: 2,
+		ID:       "020002",
+		Address:  "Gömör utca 3.",
+		Capacity: 5,
 	}
 	DB.Create(&locker5)
 
 	locker6 := models.Locker{
-		Address:       "Éhen Gyula tér 3.",
-		LockerGroupID: 2,
+		ID:       "020003",
+		Address:  "Éhen Gyula tér 3.",
+		Capacity: 10,
 	}
 	DB.Create(&locker6)
 
 	locker7 := models.Locker{
-		Address:       "Sziget utca 7.",
-		LockerGroupID: 2,
+		ID:       "020004",
+		Address:  "Sziget utca 7.",
+		Capacity: 15,
 	}
 	DB.Create(&locker7)
 
@@ -271,4 +295,36 @@ func GenerateTestEntries() {
 		City: "Szombathely",
 	}
 	DB.Create(&lgroup2)
+
+	// PackagesLockers
+
+	pl1 := models.PackageLocker{
+		Package_id: 1,
+		Locker_id:  "010002",
+	}
+	DB.Create(&pl1)
+
+	pl2 := models.PackageLocker{
+		Package_id: 2,
+		Locker_id:  "010001",
+	}
+	DB.Create(&pl2)
+
+	pl3 := models.PackageLocker{
+		Package_id: 3,
+		Locker_id:  "020003",
+	}
+	DB.Create(&pl3)
+
+	pl4 := models.PackageLocker{
+		Package_id: 4,
+		Locker_id:  "010001",
+	}
+	DB.Create(&pl4)
+
+	pl5 := models.PackageLocker{
+		Package_id: 5,
+		Locker_id:  "020003",
+	}
+	DB.Create(&pl5)
 }

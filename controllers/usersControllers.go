@@ -3,9 +3,12 @@ package controllers
 import (
 	"PackX/exceptions"
 	"PackX/initializers"
+	"PackX/middleware"
 	"PackX/models"
+	"time"
 
 	"github.com/gofiber/fiber/v2"
+	"github.com/golang-jwt/jwt"
 	"golang.org/x/crypto/bcrypt"
 )
 
@@ -31,7 +34,90 @@ func RegisterNewUser(c *fiber.Ctx) error {
 	initializers.DB.Create(&newUser)
 
 	// Send a success response
-	return c.Status(fiber.StatusOK).JSON(fiber.Map{
-		"Message": "User added successfully",
+	return c.Status(fiber.StatusCreated).JSON(fiber.Map{
+		"token":   generateJwtToken(*newUser),
+		"message": "User added successfully",
 	})
+}
+
+func Login(c *fiber.Ctx) error {
+
+	// Make a temporary user model with the given json input data
+	loginUser := new(models.User)
+	if err := c.BodyParser(loginUser); err != nil {
+		return c.Status(fiber.StatusBadRequest).JSON(exceptions.CreateInvalidInputException("Something went wrong"))
+	}
+
+	// Getting the credentials from the user
+	loginEmail := loginUser.Email
+	loginPassword := loginUser.Password
+
+	// Search for the email in DB
+	var userMatch models.User
+	initializers.DB.First(&userMatch, "email = ?", loginEmail)
+
+	if userMatch.ID == 0 {
+		return c.Status(fiber.StatusNotFound).JSON(fiber.Map{
+			"message": "Username or password is incorrect",
+		})
+	}
+
+	// Check the passwords
+	if bcrypt.CompareHashAndPassword([]byte(userMatch.Password), []byte(loginPassword)) != nil {
+		return c.Status(fiber.StatusNotFound).JSON(fiber.Map{
+			"message": "Username or password is incorrect",
+		})
+	}
+
+	return c.Status(fiber.StatusAccepted).JSON(fiber.Map{
+		"token":   generateJwtToken(userMatch),
+		"message": "Login successful",
+	})
+}
+
+// Get the access of the user based on URL {id}
+func GetAccessLevel(c *fiber.Ctx) error {
+
+	id := c.Params("id")
+
+	// Get the user with the given id
+	var user models.User
+	initializers.DB.First(&user, "id = ?", id)
+
+	// Return the value
+	return c.Status(fiber.StatusOK).JSON(fiber.Map{
+		"message": user.AccessLevel,
+	})
+}
+
+// Get all package info wchich belong to the specific user id based on URL
+func GetPackagesUnderUser(c *fiber.Ctx) error {
+
+	// Getting the {id} from URL
+	id := c.Params("id")
+
+	// Getting the packs from the desired user
+	var packs []models.Package
+	initializers.DB.Find(&packs, "user_id = ?", id)
+
+	// Sending back the list of packages with every information
+	return c.Status(fiber.StatusOK).JSON(fiber.Map{
+		"message": packs,
+	})
+}
+
+func generateJwtToken(user models.User) string {
+	claims := jwt.MapClaims{
+		"user_id": user.ID,
+		"exp":     time.Now().Add(time.Hour * 24).Unix(), // Token expiration time set to 24 hours
+	}
+
+	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
+	signedToken, err := token.SignedString(middleware.SecretKey)
+
+	if err != nil {
+		return err.Error()
+	}
+
+	return signedToken
 }

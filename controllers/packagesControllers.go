@@ -4,9 +4,22 @@ import (
 	"PackX/initializers"
 	"PackX/models"
 	"database/sql"
+	"math/rand"
+	"time"
 
 	"github.com/gofiber/fiber/v2"
 )
+
+// Generate a random string (letters + numbers) with the given length
+func randomString(length int) string {
+	characters := []byte("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789")
+	bytes := make([]byte, length)
+	for i := range bytes {
+		bytes[i] = characters[rand.Intn(len(characters))]
+	}
+
+	return string(bytes)
+}
 
 // Just load a test html page
 func PostsIndex(c *fiber.Ctx) error {
@@ -92,6 +105,19 @@ func AddNewPackage(c *fiber.Ctx) error {
 		})
 	}
 
+	// Generate a random 6 digit number for the package code
+	pcode := randomString(6)
+	csomag.Code = pcode
+
+	// Generate delivery date
+	ddate := time.Now()
+	ddate = ddate.Add(time.Hour * 5 * 24) // Add 5 days
+	csomag.DeliveryDate = ddate
+
+	// Generate TrackID
+	trackid := randomString(10)
+	csomag.TrackID = trackid
+
 	// Inserting the new package
 	result := initializers.DB.Create(&csomag)
 
@@ -108,25 +134,14 @@ func AddNewPackage(c *fiber.Ctx) error {
 	})
 }
 
-// Remove package with input json {id}
+// Remove package with URL input {id}
 func DeletePackageByID(c *fiber.Ctx) error {
 
-	// Needed because the deletion is {id} based
-	// IMPORTANT: the input json {id} needs to be an INT
-	type DeleteRequest struct {
-		ID uint `json:"id"`
-	}
+	//Getting the {id} from URL
+	id := c.Params("id")
 
-	// Making the package with the desired {id}
-	csomag := new(DeleteRequest)
-	if err := c.BodyParser(csomag); err != nil {
-		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
-			"Message": "Hibás kérés",
-		})
-	}
-
-	// Removing the right package based on the {id}
-	result := initializers.DB.Delete(&models.Package{}, csomag.ID)
+	// Removing the package based on the {id}
+	result := initializers.DB.Delete(&models.Package{}, id)
 
 	// Error handling
 	if result.Error != nil {
@@ -151,6 +166,15 @@ func ListPackageByID(c *fiber.Ctx) error {
 	var packageData *models.Package
 	err := initializers.DB.Where("id = ?", id).First(&packageData).Error
 
+	// Search for Status
+	// Getting the package status code from the packagestatus table
+	var statusindex models.PackageStatus
+	initializers.DB.Find(&statusindex, "package_id = ?", id)
+
+	// Getting the right status row in the status table
+	var statusname models.Status
+	initializers.DB.Find(&statusname, "id = ?", statusindex.Status_id)
+
 	// Error handling
 	if err != nil {
 		// If there are no package with that {id}
@@ -167,6 +191,42 @@ func ListPackageByID(c *fiber.Ctx) error {
 	}
 
 	// Return as OK
-	c.Status(fiber.StatusOK).JSON(packageData)
+	c.Status(fiber.StatusOK).JSON(fiber.Map{
+		"Data":   packageData,
+		"Status": statusname.Name,
+	})
 	return nil
+}
+
+// Change a package status via input JSON (ID, NewStatusID)
+func ChangeStatus(c *fiber.Ctx) error {
+
+	// Making a package model with the given parameters
+	newPackage := new(models.PackageStatus)
+
+	// Check error
+	if err := c.BodyParser(newPackage); err != nil {
+		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
+			"Message": "Hibás kérés",
+		})
+	}
+
+	// Update the StatusID based on the ID
+	initializers.DB.Model(&models.PackageStatus{}).Where("package_id = ?", newPackage.Package_id).Update("status_id", newPackage.Status_id)
+
+	// Return as OK
+	return c.Status(fiber.StatusOK).JSON(fiber.Map{
+		"Message": "Package status updated successfully",
+	})
+}
+
+func MakeCanceled(c *fiber.Ctx) error {
+	id := c.Params("id")
+
+	initializers.DB.Model(&models.PackageStatus{}).Where("package_id = ?", id).Update("status_id", 6)
+
+	// Return as OK
+	return c.Status(fiber.StatusOK).JSON(fiber.Map{
+		"Message": "Package successfully canceled",
+	})
 }

@@ -10,18 +10,18 @@ type User struct {
 	/*
 			Inside gorm.Model:
 
-			ID        uint           `gorm:"primaryKey"`
+			ID        uint           `gorm:"primaryKey"` incrementing
 		    CreatedAt time.Time
 		    UpdatedAt time.Time
 		    DeletedAt gorm.DeletedAt `gorm:"index"`
 	*/
-
-	Name     string
-	Address  string
-	Phone    string
-	Email    string
-	Password string
-	Packages []Package
+	Name        string
+	Address     string
+	Phone       string
+	Email       string
+	Password    string
+	AccessLevel uint
+	Packages    []Package
 }
 
 // UserRequest DTO for incoming request bodies
