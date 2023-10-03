@@ -1,23 +1,33 @@
-FROM golang as builder
+# Get Go image from DockerHub.
+FROM golang AS api
 
-WORKDIR /go/src/github.com/packx/backend-alpha
+# Set working directory.
+WORKDIR /compiler
 
+# Copy dependency locks so we can cache.
+COPY go.mod go.sum ./
+
+# Get all of our dependencies.
+RUN go mod download
+
+# Copy all of our remaining application.
 COPY . .
 
-RUN go get .
+# Build our application.
+RUN CGO_ENABLED=0 GOOS=linux go build -o app ./main.go
 
-RUN CGO_ENABLED=0 GOOS=linux go build -a -installsuffix cgo -o app .
+# Use 'scratch' image for super-mini build.
+FROM scratch AS prod
 
-# deployment image
-FROM alpine:latest  
-RUN apk --no-cache add ca-certificates
+LABEL authors="Dominik Szilágyi <dominik.szilagyi@gmail.com>,Zsombor Töreky <toreky.zsombor@gmail.com>"
+LABEL org.opencontainers.image.authors="Károly Szakály <karoly.szakaly2000@gmail.com>"
 
-LABEL author="Dominik Szilágyi <dominik.szilagyi@gmail.com>"
-LABEL maintainer="Károly Szakály <karoly.szakaly2000@gmail.com>"
+# Set working directory for this stage.
+WORKDIR /production
 
-WORKDIR /root/
-COPY --from=builder /go/src/github.com/packx/backend-alpha/app .
+# Copy our compiled executable from the last stage.
+COPY --from=api /compiler/app .
 
-CMD [ "./app" ]
-
-EXPOSE $PORT
+# Run application and expose port 8080.
+EXPOSE 8080
+CMD ["./app"]

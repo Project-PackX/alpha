@@ -3,9 +3,9 @@ version: "3"
 services:
   backend-alpha-go:
     container_name: backend-alpha-go
-    image: packx-backend-alpha-go:latest
+    build: .
     ports:
-      - 4444:4444
+      - 8000:4444
     env_file:
       - .env.docker
     restart: unless-stopped
