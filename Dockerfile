@@ -14,7 +14,7 @@ RUN go mod download
 COPY . .
 
 # Build our application.
-RUN CGO_ENABLED=0 GOOS=linux go build -o app ./main.go
+RUN CGO_ENABLED=0 GOOS=linux go build -o app .
 
 # Use 'scratch' image for super-mini build.
 FROM scratch AS prod
