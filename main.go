@@ -6,7 +6,6 @@ import (
 
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/fiber/v2/middleware/cors"
-	"github.com/gofiber/template/html/v2"
 )
 
 func init() {
@@ -26,13 +25,8 @@ func init() {
 }
 
 func main() {
-	// Set up views
-	engine := html.New("./views", ".html")
-
 	// Creating the fiber app with views
-	app := fiber.New(fiber.Config{
-		Views: engine,
-	})
+	app := fiber.New(fiber.Config{})
 
 	// Setting up the Cross-Origin Resource Sharing config
 	app.Use(cors.New(cors.ConfigDefault))
