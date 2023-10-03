@@ -1,19 +1,28 @@
 ---
-version: "3"
+version: "3.8"
 services:
-  backend-alpha-go:
-    container_name: backend-alpha-go
+  packx-backend-alpha:
+    container_name: packx-backend-alpha
     build: .
     ports:
       - 8000:4444
     env_file:
       - .env.docker
+    depends_on:
+      packx-backend-db:
+        condition: service_healthy
     restart: unless-stopped
-  db:
-    container_name: postgres
+
+  packx-backend-db:
+    container_name: packx-backend-db
+    image: postgres:15-alpine3.17
     ports:
       - 5432:5432
-    image: postgres:latest
     env_file:
       - .env.docker
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
     restart: unless-stopped
