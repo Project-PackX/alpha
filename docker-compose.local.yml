@@ -6,11 +6,15 @@ services:
     build: .
     ports:
       - 8000:4444
-    env_file:
-      - .env.docker
+    environment:
+      - PORT
+      - DB_URL
+      - JWT_SECRET_KEY
     depends_on:
       packx-backend-db:
         condition: service_healthy
+    networks:
+      - packx-backend
     restart: unless-stopped
 
   packx-backend-db:
@@ -18,11 +22,19 @@ services:
     image: postgres:15-alpine3.17
     ports:
       - 5432:5432
-    env_file:
-      - .env.docker
+    environment:
+      - POSTGRES_USER
+      - POSTGRES_PASSWORD
+      - POSTGRES_DB
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U postgres"]
       interval: 5s
       timeout: 5s
       retries: 5
+    networks:
+      - packx-backend
     restart: unless-stopped
+
+networks:
+  packx-backend:
+    name: packx-backend
