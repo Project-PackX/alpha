@@ -4,6 +4,7 @@ services:
   packx-backend-alpha:
     container_name: packx-backend-alpha
     build: .
+    image: packx-backend-alpha
     ports:
       - 8000:4444
     environment:
