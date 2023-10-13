@@ -9,6 +9,35 @@ import (
 	"github.com/gofiber/fiber/v2"
 )
 
+// List all lockers
+func ListLockers(c *fiber.Ctx) error {
+
+	var lockers []models.Locker // Slice that will contain all lockers
+
+	// Execute 'SELECT * FROM public.lockers' query
+	result := initializers.DB.Find(&lockers)
+
+	// Error handling
+	if result.Error != nil {
+		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
+			"message": "Something bad happened during the query",
+		})
+	}
+
+	// Separately treated case where no record exists
+	if result.RowsAffected == 0 {
+		return c.Status(fiber.StatusOK).JSON(fiber.Map{
+			"message": "There are no lockers in the database",
+		})
+	}
+
+	// Returning the lockers
+	return c.Status(fiber.StatusOK).JSON(fiber.Map{
+		"message": "Success",
+		"lockers": lockers,
+	})
+}
+
 // Getting the group city based on the locker id via URL
 func GetCityByLockerID(c *fiber.Ctx) error {
 

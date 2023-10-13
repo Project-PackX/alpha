@@ -20,8 +20,8 @@ func Routes(app *fiber.App) {
 	// From this point, all package endpoints are being authenticated
 	packages.Use(middleware.RequireJwtTokenAuth)
 
-	packages.Get("", controllers.ListPackages)                   // /api/packages : Listing all packages
-	packages.Post("", controllers.AddNewPackage)                 // /api/packages : Inserting new package via input json
+	packages.Get("/all", controllers.ListPackages)               // /api/packages/all : Listing all packages
+	packages.Post("/new", controllers.AddNewPackage)             // /api/packages : Inserting new package via input json
 	packages.Delete("/:id", controllers.DeletePackageByID)       // /api/packages/{id} : Delete package based on pathvariable 'id'
 	packages.Get("/getstatus/:id", controllers.GetPackageStatus) // /api/packages/getstatus/{id} : Getting the {id}. package status
 	packages.Post("/change-status", controllers.ChangeStatus)    // /api/packages/change-status : Change a package status via input JSON (ID, NewStatusID)
@@ -47,6 +47,8 @@ func Routes(app *fiber.App) {
 	// users.Get("/packages", controllers.GetPackagesUnderUsers) "// csomagok.Get("/uwp", controllers.ListUsersWithPackages" Instead of this, use the users/packages or just get all of the packages
 
 	lockers := api.Group("/lockers")
+
+	lockers.Get("/all", controllers.ListLockers) // api/lockers/all : Listing all lockers
 
 	// From this point, all locker endpoints are being authenticated
 	lockers.Use(middleware.RequireJwtTokenAuth)
