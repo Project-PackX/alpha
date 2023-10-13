@@ -12,6 +12,35 @@ import (
 	"golang.org/x/crypto/bcrypt"
 )
 
+// List all users
+func ListUsers(c *fiber.Ctx) error {
+
+	var users []models.User // Slice that will contain all users
+
+	// Execute 'SELECT * FROM public.users' query
+	result := initializers.DB.Find(&users)
+
+	// Error handling
+	if result.Error != nil {
+		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
+			"message": "Something bad happened during the query",
+		})
+	}
+
+	// Separately treated case where no record exists
+	if result.RowsAffected == 0 {
+		return c.Status(fiber.StatusOK).JSON(fiber.Map{
+			"message": "There are no users in the database",
+		})
+	}
+
+	// Returning the users
+	return c.Status(fiber.StatusOK).JSON(fiber.Map{
+		"message": "Success",
+		"users":   users,
+	})
+}
+
 func RegisterNewUser(c *fiber.Ctx) error {
 
 	// Creating the new user

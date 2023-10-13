@@ -28,6 +28,8 @@ func Routes(app *fiber.App) {
 	packages.Post("/cancel/:id", controllers.MakeCanceled)       // /api/packages/cancel/{id} : Make canceled a package based on pathvariable 'id'
 
 	users := api.Group("/users")
+
+	users.Get("/all", controllers.ListUsers)             // /api/users/all : Listing all users
 	users.Post("/register", controllers.RegisterNewUser) // /api/users/register : Register new user via input JSON
 
 	users.Post("/login", controllers.Login) // /api/users/login : Login user
