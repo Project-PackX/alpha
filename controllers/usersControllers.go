@@ -101,6 +101,8 @@ func Login(c *fiber.Ctx) error {
 	return c.Status(fiber.StatusAccepted).JSON(fiber.Map{
 		"token":   generateJwtToken(userMatch),
 		"message": "Login successful",
+		"name":    userMatch.Name,
+		"email":   userMatch.Email,
 	})
 }
 
