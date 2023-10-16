@@ -111,7 +111,11 @@ func AddNewPackage(c *fiber.Ctx) error {
 
 	// Generate delivery date
 	ddate := time.Now()
-	ddate = ddate.Add(time.Hour * 5 * 24) // Add 5 days
+	if csomag.Rapid {
+		ddate = ddate.Add(time.Hour * 3 * 24) // Add 3 days
+	} else {
+		ddate = ddate.Add(time.Hour * 5 * 24) // Add 5 days
+	}
 	csomag.DeliveryDate = ddate
 
 	// Generate TrackID

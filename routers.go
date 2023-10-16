@@ -15,7 +15,7 @@ func Routes(app *fiber.App) {
 
 	packages := api.Group("/packages")
 
-	packages.Get("/:id", controllers.ListPackageByID) // /api/packages/{id} : Getting the {id}. package details
+	packages.Get("/get/:id", controllers.ListPackageByID) // /api/packages/get/{id} : Getting the {id}. package details
 
 	// From this point, all package endpoints are being authenticated
 	packages.Use(middleware.RequireJwtTokenAuth)
