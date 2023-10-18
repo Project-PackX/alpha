@@ -1,6 +1,7 @@
 package controllers
 
 import (
+	"PackX/enums"
 	"PackX/initializers"
 	"PackX/models"
 	"database/sql"
@@ -105,6 +106,16 @@ func AddNewPackage(c *fiber.Ctx) error {
 		})
 	}
 
+	// Get the size of a package
+	meret := csomag.Size
+	if meret == "small" {
+		csomag.Size = enums.Sizes.Small
+	} else if meret == "medium" {
+		csomag.Size = enums.Sizes.Medium
+	} else {
+		csomag.Size = enums.Sizes.Large
+	}
+
 	// Generate a random 6 digit number for the package code
 	pcode := randomString(6)
 	csomag.Code = pcode
@@ -125,8 +136,14 @@ func AddNewPackage(c *fiber.Ctx) error {
 	// Inserting the new package
 	result := initializers.DB.Create(&csomag)
 
+	// Adding dispatch status
+	csomagstatusz := new(models.PackageStatus)
+	csomagstatusz.Package_id = csomag.ID
+	csomagstatusz.Status_id = 1
+	result2 := initializers.DB.Create(&csomagstatusz)
+
 	// Error handling
-	if result.Error != nil {
+	if result.Error != nil || result2.Error != nil {
 		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
 			"Message": "Hiba történt a csomag létrehozása közben",
 		})
@@ -169,11 +186,12 @@ func ListPackageByID(c *fiber.Ctx) error {
 	// Search for the package with the desired {id}
 	var packageData *models.Package
 	err := initializers.DB.Where("track_id = ?", id).First(&packageData).Error
+	packID := packageData.ID
 
 	// Search for Status
 	// Getting the package status code from the packagestatus table
 	var statusindex models.PackageStatus
-	initializers.DB.Find(&statusindex, "package_id = ?", id)
+	initializers.DB.Find(&statusindex, "package_id = ?", packID)
 
 	// Getting the right status row in the status table
 	var statusname models.Status

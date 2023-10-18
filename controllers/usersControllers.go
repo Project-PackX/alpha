@@ -59,6 +59,9 @@ func RegisterNewUser(c *fiber.Ctx) error {
 	hashedPassword, _ := bcrypt.GenerateFromPassword([]byte(newUser.Password), 14)
 	newUser.Password = string(hashedPassword)
 
+	//Adding permission level
+	newUser.AccessLevel = 1
+
 	// Save the user to the database
 	initializers.DB.Create(&newUser)
 
@@ -139,8 +142,9 @@ func GetPackagesUnderUser(c *fiber.Ctx) error {
 
 func generateJwtToken(user models.User) string {
 	claims := jwt.MapClaims{
-		"user_id": user.ID,
-		"exp":     time.Now().Add(time.Hour * 24).Unix(), // Token expiration time set to 24 hours
+		"access_level": user.AccessLevel,
+		"user_id":      user.ID,
+		"exp":          time.Now().Add(time.Hour * 24).Unix(), // Token expiration time set to 24 hours
 	}
 
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
