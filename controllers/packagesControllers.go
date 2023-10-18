@@ -164,11 +164,11 @@ func DeletePackageByID(c *fiber.Ctx) error {
 func ListPackageByID(c *fiber.Ctx) error {
 
 	// Getting the {id} from URL
-	id := c.Params("id")
+	id := c.Params("trackid")
 
 	// Search for the package with the desired {id}
 	var packageData *models.Package
-	err := initializers.DB.Where("id = ?", id).First(&packageData).Error
+	err := initializers.DB.Where("track_id = ?", id).First(&packageData).Error
 
 	// Search for Status
 	// Getting the package status code from the packagestatus table

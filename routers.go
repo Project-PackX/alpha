@@ -15,13 +15,13 @@ func Routes(app *fiber.App) {
 
 	packages := api.Group("/packages")
 
-	packages.Get("/get/:id", controllers.ListPackageByID) // /api/packages/get/{id} : Getting the {id}. package details
+	packages.Get("/get/:trackid", controllers.ListPackageByID) // /api/packages/get/{id} : Getting the {id}. package details
 
 	// From this point, all package endpoints are being authenticated
 	packages.Use(middleware.RequireJwtTokenAuth)
 
 	packages.Get("/all", controllers.ListPackages)               // /api/packages/all : Listing all packages
-	packages.Post("/new", controllers.AddNewPackage)             // /api/packages : Inserting new package via input json
+	packages.Post("/new", controllers.AddNewPackage)             // /api/packages/new : Inserting new package via input json
 	packages.Delete("/:id", controllers.DeletePackageByID)       // /api/packages/{id} : Delete package based on pathvariable 'id'
 	packages.Get("/getstatus/:id", controllers.GetPackageStatus) // /api/packages/getstatus/{id} : Getting the {id}. package status
 	packages.Post("/change-status", controllers.ChangeStatus)    // /api/packages/change-status : Change a package status via input JSON (ID, NewStatusID)
