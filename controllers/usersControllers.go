@@ -1,6 +1,7 @@
 package controllers
 
 import (
+	"PackX/enums"
 	"PackX/exceptions"
 	"PackX/initializers"
 	"PackX/middleware"
@@ -60,12 +61,16 @@ func RegisterNewUser(c *fiber.Ctx) error {
 	hashedPassword, _ := bcrypt.GenerateFromPassword([]byte(newUser.Password), 14)
 	newUser.Password = string(hashedPassword)
 
-	//Adding permission level based on email
-	// If ends with 'packx.hu' -> admin, normal user otherwise
+	// Adding permission level based on email
+	// If ends with 'packx.hu' -> admin
+	// If ends with 'packx-courier.hu' -> courier
+	// Normal user otherwise
 	if strings.Split(newUser.Email, "@")[1] == "packx.hu" {
-		newUser.AccessLevel = 3
+		newUser.AccessLevel = enums.AccessLevel.Admin
+	} else if strings.Split(newUser.Email, "@")[1] == "packx-courier.hu" {
+		newUser.AccessLevel = enums.AccessLevel.Courier
 	} else {
-		newUser.AccessLevel = 1
+		newUser.AccessLevel = enums.AccessLevel.Normal
 	}
 
 	// Save the user to the database
