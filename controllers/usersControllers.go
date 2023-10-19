@@ -5,6 +5,7 @@ import (
 	"PackX/initializers"
 	"PackX/middleware"
 	"PackX/models"
+	"strings"
 	"time"
 
 	"github.com/gofiber/fiber/v2"
@@ -59,8 +60,13 @@ func RegisterNewUser(c *fiber.Ctx) error {
 	hashedPassword, _ := bcrypt.GenerateFromPassword([]byte(newUser.Password), 14)
 	newUser.Password = string(hashedPassword)
 
-	//Adding permission level
-	newUser.AccessLevel = 1
+	//Adding permission level based on email
+	// If ends with 'packx.hu' -> admin, normal user otherwise
+	if strings.Split(newUser.Email, "@")[1] == "packx.hu" {
+		newUser.AccessLevel = 3
+	} else {
+		newUser.AccessLevel = 1
+	}
 
 	// Save the user to the database
 	initializers.DB.Create(&newUser)
