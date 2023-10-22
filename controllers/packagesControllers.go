@@ -8,8 +8,7 @@ import (
 	"database/sql"
 	"fmt"
 	"math/rand"
-	"os"
-	"path/filepath"
+
 	"time"
 
 	"github.com/gofiber/fiber/v2"
@@ -17,12 +16,11 @@ import (
 
 var SUBJECT_ADD_PACKAGE = "Your package has beent sent"
 var BODY_ADD_PACKAGE = `
-	<p><h4>Dear Customer, your package is being delivered</h4><br>
-	From: %s<br>
+	<span><h4 style="color:black;">Dear Customer, your package is being delivered</h4></span>
+	<p style="color:black;">From: %s<br>
 	To: %s</p>
 	<p>You can track your package with this track ID:<em>%s</em></p>
 	<p>Sincerely,<br>PackX</br></p>
-	<img style="width=200; height=200;" src='%s' alt='Package Image'/>
 `
 
 // Generate a random string (letters + numbers) with the given length
@@ -171,12 +169,7 @@ func AddNewPackage(c *fiber.Ctx) error {
 	initializers.DB.Find(&senderLocker, "ID = ?", csomag.SenderLockerId)
 	initializers.DB.Find(&destinationLocker, "ID = ?", csomag.DestinationLockerId)
 
-	workingDir, _ := os.Getwd()
-	imagePath := filepath.Join(workingDir, "assets", "packx_black.png")
-	var logoUri, _ = utils.ConvertPngToDataUri(imagePath)
-
-	var body = fmt.Sprintf(BODY_ADD_PACKAGE, senderLocker.City+", "+senderLocker.Address, destinationLocker.City+", "+destinationLocker.Address, csomag.TrackID, logoUri)
-	fmt.Println(body)
+	var body = fmt.Sprintf(BODY_ADD_PACKAGE, senderLocker.City+", "+senderLocker.Address, destinationLocker.City+", "+destinationLocker.Address, csomag.TrackID)
 	utils.SendEmail([]string{csomag.ReceiverEmail, sender.Email}, SUBJECT_ADD_PACKAGE, body)
 
 	// Return as OK
