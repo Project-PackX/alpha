@@ -21,6 +21,8 @@ type Package struct {
 	UserID              uint      // Sender user's id
 	SenderLockerId      string    // Sender locker's id
 	DestinationLockerId string    // Destination locker's id
+	ReceiverName        string    // Name of the person who gets the package
+	ReceiverEmail       string    // Email of the person who gets the package
 	Size                string    // Could be small, medium or large
 	Rapid               bool      //Need fast delivery
 	Price               float64   // Delivery fee (how to calculate?)
