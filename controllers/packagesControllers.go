@@ -4,12 +4,26 @@ import (
 	"PackX/enums"
 	"PackX/initializers"
 	"PackX/models"
+	"PackX/utils"
 	"database/sql"
+	"fmt"
 	"math/rand"
+	"os"
+	"path/filepath"
 	"time"
 
 	"github.com/gofiber/fiber/v2"
 )
+
+var SUBJECT_ADD_PACKAGE = "Your package has beent sent"
+var BODY_ADD_PACKAGE = `
+	<p><h4>Dear Customer, your package is being delivered</h4><br>
+	From: %s<br>
+	To: %s</p>
+	<p>You can track your package with this track ID:<em>%s</em></p>
+	<p>Sincerely,<br>PackX</br></p>
+	<img style="width=200; height=200;" src='%s' alt='Package Image'/>
+`
 
 // Generate a random string (letters + numbers) with the given length
 func randomString(length int) string {
@@ -102,7 +116,7 @@ func AddNewPackage(c *fiber.Ctx) error {
 	csomag := new(models.Package)
 	if err := c.BodyParser(csomag); err != nil {
 		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
-			"Message": "Hibás kérés",
+			"Message": "Wrong format",
 		})
 	}
 
@@ -149,10 +163,24 @@ func AddNewPackage(c *fiber.Ctx) error {
 		})
 	}
 
+	var sender *models.User
+	var senderLocker *models.Locker
+	var destinationLocker *models.Locker
+
+	initializers.DB.Find(&sender, "ID = ?", csomag.UserID)
+	initializers.DB.Find(&senderLocker, "ID = ?", csomag.SenderLockerId)
+	initializers.DB.Find(&destinationLocker, "ID = ?", csomag.DestinationLockerId)
+
+	workingDir, _ := os.Getwd()
+	imagePath := filepath.Join(workingDir, "assets", "packx_black.png")
+	var logoUri, _ = utils.ConvertPngToDataUri(imagePath)
+
+	var body = fmt.Sprintf(BODY_ADD_PACKAGE, senderLocker.City+", "+senderLocker.Address, destinationLocker.City+", "+destinationLocker.Address, csomag.TrackID, logoUri)
+	fmt.Println(body)
+	utils.SendEmail([]string{csomag.ReceiverEmail, sender.Email}, SUBJECT_ADD_PACKAGE, body)
+
 	// Return as OK
-	return c.Status(fiber.StatusOK).JSON(fiber.Map{
-		"Message": "Csomag sikeresen hozzáadva",
-	})
+	return c.Status(fiber.StatusOK).JSON(csomag)
 }
 
 // Remove package with URL input {id}
