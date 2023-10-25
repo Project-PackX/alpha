@@ -1,10 +1,6 @@
 package controllers
 
 import (
-	"PackX/enums"
-	"PackX/initializers"
-	"PackX/models"
-	"PackX/utils"
 	"database/sql"
 	"fmt"
 	"math/rand"
@@ -14,7 +10,7 @@ import (
 	"github.com/Project-PackX/backend/enums"
 	"github.com/Project-PackX/backend/initializers"
 	"github.com/Project-PackX/backend/models"
-
+	"github.com/Project-PackX/backend/utils"
 	"github.com/gofiber/fiber/v2"
 )
 
@@ -138,11 +134,15 @@ func AddNewPackage(c *fiber.Ctx) error {
 
 	// Generate delivery date
 	ddate := time.Now()
-	if csomag.Rapid {
-		ddate = ddate.Add(time.Hour * 3 * 24) // Add 3 days
-	} else {
-		ddate = ddate.Add(time.Hour * 5 * 24) // Add 5 days
+	if csomag.DeliverySpeed == enums.DeliverySpeeds.Standard {
+		ddate = ddate.Add(time.Hour * 7 * 24) // Add 7 days
+	} else if csomag.DeliverySpeed == enums.DeliverySpeeds.Rapid {
+		ddate = ddate.Add(time.Hour * 7 * 24) // Add 3 days
+	} else if csomag.DeliverySpeed == enums.DeliverySpeeds.UltraRapid {
+		ddate = ddate.Add(time.Hour * 7 * 24) // Add 1 days
 	}
+
+	// In case it is same day, no need for else clause
 	csomag.DeliveryDate = ddate
 
 	// Generate TrackID
@@ -153,13 +153,13 @@ func AddNewPackage(c *fiber.Ctx) error {
 	result := initializers.DB.Create(&csomag)
 
 	// Adding dispatch status
-	csomagstatusz := new(models.PackageStatus)
-	csomagstatusz.Package_id = csomag.ID
-	csomagstatusz.Status_id = 1
-	result2 := initializers.DB.Create(&csomagstatusz)
+	packageStatus := new(models.PackageStatus)
+	packageStatus.Package_id = csomag.ID
+	packageStatus.Status_id = 1
+	saveResult := initializers.DB.Create(&packageStatus)
 
 	// Error handling
-	if result.Error != nil || result2.Error != nil {
+	if result.Error != nil || saveResult.Error != nil {
 		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
 			"Message": "Hiba történt a csomag létrehozása közben",
 		})
