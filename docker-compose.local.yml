@@ -8,8 +8,11 @@ services:
     ports:
       - 8000:4444
     environment:
-      - PORT
-      - DB_URL
+      - PORT # should be deprecated
+      - POSTGRES_HOST
+      - POSTGRES_USER
+      - POSTGRES_PASSWORD
+      - POSTGRES_DB
       - JWT_SECRET_KEY
     depends_on:
       packx-backend-db:
@@ -22,7 +25,7 @@ services:
     container_name: packx-backend-db
     image: postgres:15-alpine3.17
     ports:
-      - 5432:5432
+      - 5432
     environment:
       - POSTGRES_USER
       - POSTGRES_PASSWORD
