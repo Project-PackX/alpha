@@ -9,6 +9,31 @@ import (
 	"github.com/gofiber/fiber/v2"
 )
 
+func AddNewLocker(c *fiber.Ctx) error {
+	// Creating the new locker with the input json body
+	locker := new(models.Locker)
+	if err := c.BodyParser(locker); err != nil {
+		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
+			"Message": "Bad request",
+		})
+	}
+
+	// Inserting the new package
+	result := initializers.DB.Create(&locker)
+
+	// Error handling
+	if result.Error != nil {
+		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
+			"Message": "There was an error during adding new locker",
+		})
+	}
+
+	// Return as OK
+	return c.Status(fiber.StatusOK).JSON(fiber.Map{
+		"Message": "Locker successfully added",
+	})
+}
+
 // List all lockers
 func ListLockers(c *fiber.Ctx) error {
 
