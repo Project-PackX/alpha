@@ -1,10 +1,11 @@
 package controllers
 
 import (
-	"PackX/exceptions"
-	"PackX/initializers"
-	"PackX/models"
 	"math"
+
+	"github.com/Project-PackX/backend/exceptions"
+	"github.com/Project-PackX/backend/initializers"
+	"github.com/Project-PackX/backend/models"
 
 	"github.com/gofiber/fiber/v2"
 )

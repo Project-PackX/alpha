@@ -1,10 +1,11 @@
 package middleware
 
 import (
-	"PackX/initializers"
-	"PackX/models"
 	"os"
 	"time"
+
+	"github.com/Project-PackX/backend/initializers"
+	"github.com/Project-PackX/backend/models"
 
 	"github.com/gofiber/fiber/v2"
 	"github.com/golang-jwt/jwt"

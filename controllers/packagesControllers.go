@@ -1,12 +1,13 @@
 package controllers
 
 import (
-	"PackX/enums"
-	"PackX/initializers"
-	"PackX/models"
 	"database/sql"
 	"math/rand"
 	"time"
+
+	"github.com/Project-PackX/backend/enums"
+	"github.com/Project-PackX/backend/initializers"
+	"github.com/Project-PackX/backend/models"
 
 	"github.com/gofiber/fiber/v2"
 )

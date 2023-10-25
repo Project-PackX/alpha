@@ -1,8 +1,8 @@
 package main
 
 import (
-	"PackX/controllers"
-	"PackX/middleware"
+	"github.com/Project-PackX/backend/controllers"
+	"github.com/Project-PackX/backend/middleware"
 
 	"github.com/gofiber/fiber/v2"
 )

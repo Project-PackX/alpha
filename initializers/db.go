@@ -1,11 +1,12 @@
 package initializers
 
 import (
-	"PackX/enums"
-	"PackX/models"
 	"fmt"
 	"os"
 	"time"
+
+	"github.com/Project-PackX/backend/enums"
+	"github.com/Project-PackX/backend/models"
 
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"

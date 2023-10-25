@@ -1,8 +1,9 @@
 package main
 
 import (
-	"PackX/initializers"
 	"os"
+
+	"github.com/Project-PackX/backend/initializers"
 
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/fiber/v2/middleware/cors"
