@@ -1,4 +1,4 @@
-module PackX
+module github.com/Project-PackX/backend
 
 go 1.20
 

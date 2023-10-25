@@ -1,8 +1,8 @@
 package main
 
 import (
-	"PackX/controllers"
-	"PackX/middleware"
+	"github.com/Project-PackX/backend/controllers"
+	"github.com/Project-PackX/backend/middleware"
 
 	"github.com/gofiber/fiber/v2"
 )
@@ -38,6 +38,7 @@ func Routes(app *fiber.App) {
 	users.Use(middleware.RequireJwtTokenAuth)
 
 	users.Get("/get-accesslevel/:id", controllers.GetAccessLevel) // /api/users/get-accesslevel/{id} : Get the access level of the {id}. user
+	users.Post("/set-accesslevel", controllers.SetAccessLevel)    // /api/users/set-accesslevel : Set the access level of the user {email, accesslevel}
 	/*
 		Until we find a better approach for this accesslevel problem...
 		Should we send a number, or string, maybe create a new DB table with these pairs?
@@ -52,6 +53,8 @@ func Routes(app *fiber.App) {
 
 	// From this point, all locker endpoints are being authenticated
 	lockers.Use(middleware.RequireJwtTokenAuth)
+
+	lockers.Post("/new", controllers.AddNewLocker) // /api/lockers/new : Add new locker via input json
 
 	lockers.Get("/get-packages/:id", controllers.GetPackagesByLockerID) // /api/lockers/get-packages/{id} : Get all the information about the packages that are in the {id}. locker
 	lockers.Get("/get-fullness/:id", controllers.GetFullness)           // /api/lockers/get-fullness/{id} : Get the fullness stats (cap, number of package, percentage) of the {id}. locker

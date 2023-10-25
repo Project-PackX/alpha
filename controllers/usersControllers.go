@@ -1,13 +1,14 @@
 package controllers
 
 import (
-	"PackX/enums"
-	"PackX/exceptions"
-	"PackX/initializers"
-	"PackX/middleware"
-	"PackX/models"
 	"strings"
 	"time"
+
+	"github.com/Project-PackX/backend/enums"
+	"github.com/Project-PackX/backend/exceptions"
+	"github.com/Project-PackX/backend/initializers"
+	"github.com/Project-PackX/backend/middleware"
+	"github.com/Project-PackX/backend/models"
 
 	"github.com/gofiber/fiber/v2"
 	"github.com/golang-jwt/jwt"
@@ -132,6 +133,26 @@ func GetAccessLevel(c *fiber.Ctx) error {
 	// Return the value
 	return c.Status(fiber.StatusOK).JSON(fiber.Map{
 		"message": user.AccessLevel,
+	})
+}
+
+func SetAccessLevel(c *fiber.Ctx) error {
+	// Making a user model with the given parameters
+	user := new(models.User)
+
+	// Check error
+	if err := c.BodyParser(user); err != nil {
+		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
+			"Message": "Hibás kérés",
+		})
+	}
+
+	// Update the StatusID based on the ID
+	initializers.DB.Model(&models.User{}).Where("email = ?", user.Email).Update("access_level", user.AccessLevel)
+
+	// Return as OK
+	return c.Status(fiber.StatusOK).JSON(fiber.Map{
+		"Message": "User access level updated successfully",
 	})
 }
 
