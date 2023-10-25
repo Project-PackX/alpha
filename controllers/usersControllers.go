@@ -135,6 +135,26 @@ func GetAccessLevel(c *fiber.Ctx) error {
 	})
 }
 
+func SetAccessLevel(c *fiber.Ctx) error {
+	// Making a user model with the given parameters
+	user := new(models.User)
+
+	// Check error
+	if err := c.BodyParser(user); err != nil {
+		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
+			"Message": "Hibás kérés",
+		})
+	}
+
+	// Update the StatusID based on the ID
+	initializers.DB.Model(&models.User{}).Where("email = ?", user.Email).Update("access_level", user.AccessLevel)
+
+	// Return as OK
+	return c.Status(fiber.StatusOK).JSON(fiber.Map{
+		"Message": "User access level updated successfully",
+	})
+}
+
 // Get all package info wchich belong to the specific user id based on URL
 func GetPackagesUnderUser(c *fiber.Ctx) error {
 
