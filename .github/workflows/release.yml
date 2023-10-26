@@ -2,14 +2,21 @@ name: release
 
 on:
   push:
-    tags:
-      - "*"
-
-permissions:
-  contents: write
-  packages: write
+    branches:
+      - main
 
 jobs:
+  semver:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Bump version and push tag
+        id: tag_version
+        uses: mathieudutour/github-tag-action@v6.1
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+
   goreleaser:
     runs-on: ubuntu-latest
     steps:
