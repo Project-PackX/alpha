@@ -32,8 +32,12 @@ func Routes(app *fiber.App) {
 	users.Get("/all", controllers.ListUsers)             // /api/users/all : Listing all users
 	users.Post("/register", controllers.RegisterNewUser) // /api/users/register : Register new user via input JSON
 
-	users.Post("/login", controllers.Login)                  // /api/users/login : Login user
+	users.Post("/login", controllers.Login) // /api/users/login : Login user
+
 	users.Post("/password-reset", controllers.ResetPassword) // /api/users/password-reset : Resetting the password
+
+	users.Post("/check-code", controllers.CheckResetCode) // /api/users/check-code : Checking the code
+
 	// From this point, all user endpoints are being authenticated
 	users.Use(middleware.RequireJwtTokenAuth)
 

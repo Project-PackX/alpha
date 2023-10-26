@@ -193,7 +193,7 @@ func SetAccessLevel(c *fiber.Ctx) error {
 	// Check error
 	if err := c.BodyParser(user); err != nil {
 		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
-			"Message": "Hibás kérés",
+			"message": "Hibás kérés",
 		})
 	}
 
@@ -202,7 +202,7 @@ func SetAccessLevel(c *fiber.Ctx) error {
 
 	// Return as OK
 	return c.Status(fiber.StatusOK).JSON(fiber.Map{
-		"Message": "User access level updated successfully",
+		"message": "User access level updated successfully",
 	})
 }
 
@@ -240,6 +240,32 @@ func ResetPassword(c *fiber.Ctx) error {
 
 	var body = fmt.Sprintf(BODY_RESET_PASSWORD, resetCode)
 	utils.SendEmail([]string{user.Email}, SUBJECT_RESET_PASSWORD, body)
+
+	return c.SendStatus(fiber.StatusOK)
+}
+
+func CheckResetCode(c *fiber.Ctx) error {
+
+	code := c.Get("code")
+
+	if code == "" {
+		c.SendStatus(fiber.StatusBadRequest)
+	}
+
+	var resetPasswordCode models.ResetPasswordCode
+	initializers.DB.Find(&resetPasswordCode, "code = ?", code)
+
+	if resetPasswordCode.ID == 0 {
+		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
+			"message": "Code is invalid",
+		})
+	}
+
+	if resetPasswordCode.CreatedAt.UnixNano() <= time.Now().Add(time.Hour*1).UnixNano() {
+		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
+			"message": "Code is invalid",
+		})
+	}
 
 	return c.SendStatus(fiber.StatusOK)
 }
