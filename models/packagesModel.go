@@ -24,7 +24,7 @@ type Package struct {
 	ReceiverName        string    // Name of the person who gets the package
 	ReceiverEmail       string    // Email of the person who gets the package
 	Size                string    // Could be small, medium or large
-	Rapid               bool      //Need fast delivery
+	DeliverySpeed       string    // Type of delivery
 	Price               float64   // Delivery fee (how to calculate?)
 	Code                string    // Code to open the locker (both sender and receiver) - random 6 digit number maybe?
 	DeliveryDate        time.Time // Date when the package arrives

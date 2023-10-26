@@ -81,6 +81,7 @@ func RegisterNewUser(c *fiber.Ctx) error {
 	return c.Status(fiber.StatusCreated).JSON(fiber.Map{
 		"token":   generateJwtToken(*newUser),
 		"message": "User added successfully",
+		"user":    newUser,
 	})
 }
 
@@ -119,6 +120,43 @@ func Login(c *fiber.Ctx) error {
 		"name":    userMatch.Name,
 		"email":   userMatch.Email,
 	})
+}
+
+func EditUser(c *fiber.Ctx) error {
+	userInput := new(models.User)
+	if err := c.BodyParser(userInput); err != nil {
+		return c.Status(fiber.StatusBadRequest).JSON(exceptions.CreateInvalidInputException("Bad input format"))
+	}
+
+	var userToEdit models.User
+	userToEditID := c.Params("id")
+	initializers.DB.First(&userToEdit, "ID = ?", userToEditID)
+
+	if userToEditID == "0" {
+		return c.Status(fiber.StatusNotFound).JSON(fiber.Map{
+			"message": "User was not found",
+		})
+	}
+
+	if userInput.Name != "" && userInput.Name != userToEdit.Name {
+		userToEdit.Name = userInput.Name
+	}
+
+	if userInput.Email != "" && userInput.Email != userToEdit.Email {
+		userToEdit.Email = userInput.Email
+	}
+
+	if userInput.Address != "" && userInput.Address != userToEdit.Address {
+		userToEdit.Address = userInput.Address
+	}
+
+	if userInput.Phone != "" && userInput.Phone != userToEdit.Phone {
+		userToEdit.Phone = userInput.Phone
+	}
+
+	initializers.DB.Save(&userToEdit)
+
+	return c.Status(fiber.StatusAccepted).JSON(userToEdit)
 }
 
 // Get the access of the user based on URL {id}

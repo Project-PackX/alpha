@@ -2,15 +2,26 @@ package controllers
 
 import (
 	"database/sql"
+	"fmt"
 	"math/rand"
+
 	"time"
 
 	"github.com/Project-PackX/backend/enums"
 	"github.com/Project-PackX/backend/initializers"
 	"github.com/Project-PackX/backend/models"
-
+	"github.com/Project-PackX/backend/utils"
 	"github.com/gofiber/fiber/v2"
 )
+
+var SUBJECT_ADD_PACKAGE = "Your package has beent sent"
+var BODY_ADD_PACKAGE = `
+	<span><h4 style="color:black;">Dear Customer, your package is being delivered</h4></span>
+	<p style="color:black;">From: %s<br>
+	To: %s</p>
+	<p>You can track your package with this track ID:<em>%s</em></p>
+	<p>Sincerely,<br>PackX</br></p>
+`
 
 // Generate a random string (letters + numbers) with the given length
 func randomString(length int) string {
@@ -103,7 +114,7 @@ func AddNewPackage(c *fiber.Ctx) error {
 	csomag := new(models.Package)
 	if err := c.BodyParser(csomag); err != nil {
 		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
-			"Message": "Hibás kérés",
+			"Message": "Wrong format",
 		})
 	}
 
@@ -123,11 +134,15 @@ func AddNewPackage(c *fiber.Ctx) error {
 
 	// Generate delivery date
 	ddate := time.Now()
-	if csomag.Rapid {
-		ddate = ddate.Add(time.Hour * 3 * 24) // Add 3 days
-	} else {
-		ddate = ddate.Add(time.Hour * 5 * 24) // Add 5 days
+	if csomag.DeliverySpeed == enums.DeliverySpeeds.Standard {
+		ddate = ddate.Add(time.Hour * 7 * 24) // Add 7 days
+	} else if csomag.DeliverySpeed == enums.DeliverySpeeds.Rapid {
+		ddate = ddate.Add(time.Hour * 7 * 24) // Add 3 days
+	} else if csomag.DeliverySpeed == enums.DeliverySpeeds.UltraRapid {
+		ddate = ddate.Add(time.Hour * 7 * 24) // Add 1 days
 	}
+
+	// In case it is same day, no need for else clause
 	csomag.DeliveryDate = ddate
 
 	// Generate TrackID
@@ -138,22 +153,31 @@ func AddNewPackage(c *fiber.Ctx) error {
 	result := initializers.DB.Create(&csomag)
 
 	// Adding dispatch status
-	csomagstatusz := new(models.PackageStatus)
-	csomagstatusz.Package_id = csomag.ID
-	csomagstatusz.Status_id = 1
-	result2 := initializers.DB.Create(&csomagstatusz)
+	packageStatus := new(models.PackageStatus)
+	packageStatus.Package_id = csomag.ID
+	packageStatus.Status_id = 1
+	saveResult := initializers.DB.Create(&packageStatus)
 
 	// Error handling
-	if result.Error != nil || result2.Error != nil {
+	if result.Error != nil || saveResult.Error != nil {
 		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
 			"Message": "Hiba történt a csomag létrehozása közben",
 		})
 	}
 
+	var sender *models.User
+	var senderLocker *models.Locker
+	var destinationLocker *models.Locker
+
+	initializers.DB.Find(&sender, "ID = ?", csomag.UserID)
+	initializers.DB.Find(&senderLocker, "ID = ?", csomag.SenderLockerId)
+	initializers.DB.Find(&destinationLocker, "ID = ?", csomag.DestinationLockerId)
+
+	var body = fmt.Sprintf(BODY_ADD_PACKAGE, senderLocker.City+", "+senderLocker.Address, destinationLocker.City+", "+destinationLocker.Address, csomag.TrackID)
+	utils.SendEmail([]string{csomag.ReceiverEmail, sender.Email}, SUBJECT_ADD_PACKAGE, body)
+
 	// Return as OK
-	return c.Status(fiber.StatusOK).JSON(fiber.Map{
-		"Message": "Csomag sikeresen hozzáadva",
-	})
+	return c.Status(fiber.StatusOK).JSON(csomag)
 }
 
 // Remove package with URL input {id}
