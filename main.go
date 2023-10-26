@@ -31,27 +31,6 @@ func main() {
 
 	// Setting up the Cross-Origin Resource Sharing config
 	app.Use(cors.New(cors.ConfigDefault))
-	/*
-		Inside ConfigDefault:
-			Next:         nil,
-		    AllowOriginsFunc: nil,
-		    AllowOrigins: "*",
-		    AllowMethods: strings.Join([]string{
-		       	fiber.MethodGet,
-		       	fiber.MethodPost,
-		       	fiber.MethodHead,
-		       	fiber.MethodPut,
-		       	fiber.MethodDelete,
-		       	fiber.MethodPatch,
-		    }, ","),
-		    AllowHeaders:     "",
-		    AllowCredentials: false,
-			ExposeHeaders:    "",
-		    MaxAge:           0,
-	*/
-
-	// Configure the application
-	app.Static("/", "./public")
 
 	// Endpoints management via function
 	Routes(app)
