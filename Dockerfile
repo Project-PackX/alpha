@@ -14,7 +14,7 @@ RUN go mod download
 COPY . .
 
 # Build our application.
-RUN CGO_ENABLED=0 GOOS=linux go build -o app .
+RUN CGO_ENABLED=0 GOOS=linux go build -o backend .
 
 # Use 'scratch' image for super-mini build.
 FROM scratch AS prod
@@ -26,8 +26,8 @@ LABEL org.opencontainers.image.authors="Károly Szakály <karoly.szakaly2000@gma
 WORKDIR /production
 
 # Copy our compiled executable from the last stage.
-COPY --from=api /compiler/app .
+COPY --from=api /compiler/backend .
 
 # Run application and expose port 8080.
 EXPOSE 8080
-CMD ["./app"]
+CMD ["./backend"]
