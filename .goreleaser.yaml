@@ -12,44 +12,44 @@ builds:
 
 dockers:
   - image_templates:
-      - "ghcr.io/packx/{{ .ProjectName }}:{{ .Tag }}-amd64"
-      - "ghcr.io/packx/{{ .ProjectName }}:latest-amd64"
+      - "ghcr.io/project-packx/{{ .ProjectName }}:{{ .Tag }}-amd64"
+      - "ghcr.io/project-packx/{{ .ProjectName }}:latest-amd64"
     use: buildx
     build_flag_templates:
       - "--pull"
       - "--platform=linux/amd64"
       - "--label=org.opencontainers.image.title={{.ProjectName}}"
       - "--label=org.opencontainers.image.authors=Károly Szakály <karoly.szakaly2000@gmail.com>,Dominik Szilágyi <dominik.szilagyi@gmail.com>,Zsombor Töreky <toreky.zsombor@gmail.com>"
-      - "--label=org.opencontainers.image.source=https://github.com/Project-PackX/backend"
+      - "--label=org.opencontainers.image.source=https://github.com/Project-project-packx/backend"
       - "--label=org.opencontainers.image.created={{.Date}}"
       - "--label=org.opencontainers.image.revision={{.FullCommit}}"
       - "--label=org.opencontainers.image.version={{.Tag}}"
 
   - image_templates:
-      - "ghcr.io/packx/{{ .ProjectName }}:{{ .Tag }}-arm64"
-      - "ghcr.io/packx/{{ .ProjectName }}:latest-arm64"
+      - "ghcr.io/project-packx/{{ .ProjectName }}:{{ .Tag }}-arm64"
+      - "ghcr.io/project-packx/{{ .ProjectName }}:latest-arm64"
     use: buildx
     build_flag_templates:
       - "--pull"
       - "--platform=linux/arm64"
       - "--label=org.opencontainers.image.title={{.ProjectName}}"
       - "--label=org.opencontainers.image.authors=Károly Szakály <karoly.szakaly2000@gmail.com>,Dominik Szilágyi <dominik.szilagyi@gmail.com>,Zsombor Töreky <toreky.zsombor@gmail.com>"
-      - "--label=org.opencontainers.image.source=https://github.com/Project-PackX/backend"
+      - "--label=org.opencontainers.image.source=https://github.com/Project-project-packx/backend"
       - "--label=org.opencontainers.image.created={{.Date}}"
       - "--label=org.opencontainers.image.revision={{.FullCommit}}"
       - "--label=org.opencontainers.image.version={{.Tag}}"
     goarch: arm64
 
 docker_manifests:
-  - name_template: ghcr.io/packx/{{ .ProjectName }}:{{ .Tag }}
+  - name_template: ghcr.io/project-packx/{{ .ProjectName }}:{{ .Tag }}
     image_templates:
-      - "ghcr.io/packx/{{ .ProjectName }}:{{ .Tag }}-amd64"
-      - "ghcr.io/packx/{{ .ProjectName }}:{{ .Tag }}-arm64"
+      - "ghcr.io/project-packx/{{ .ProjectName }}:{{ .Tag }}-amd64"
+      - "ghcr.io/project-packx/{{ .ProjectName }}:{{ .Tag }}-arm64"
 
-  - name_template: ghcr.io/packx/{{ .ProjectName }}:latest
+  - name_template: ghcr.io/project-packx/{{ .ProjectName }}:latest
     image_templates:
-      - "ghcr.io/packx/{{ .ProjectName }}:latest-amd64"
-      - "ghcr.io/packx/{{ .ProjectName }}:latest-arm64"
+      - "ghcr.io/project-packx/{{ .ProjectName }}:latest-amd64"
+      - "ghcr.io/project-packx/{{ .ProjectName }}:latest-arm64"
 
 changelog:
   sort: asc
