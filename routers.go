@@ -32,8 +32,8 @@ func Routes(app *fiber.App) {
 	users.Get("/all", controllers.ListUsers)             // /api/users/all : Listing all users
 	users.Post("/register", controllers.RegisterNewUser) // /api/users/register : Register new user via input JSON
 
-	users.Post("/login", controllers.Login) // /api/users/login : Login user
-
+	users.Post("/login", controllers.Login)                  // /api/users/login : Login user
+	users.Post("/password-reset", controllers.ResetPassword) // /api/users/password-reset : Resetting the password
 	// From this point, all user endpoints are being authenticated
 	users.Use(middleware.RequireJwtTokenAuth)
 
@@ -41,7 +41,7 @@ func Routes(app *fiber.App) {
 
 	users.Get("/get-accesslevel/:id", controllers.GetAccessLevel) // /api/users/get-accesslevel/{id} : Get the access level of the {id}. user
 
-	users.Post("/set-accesslevel", controllers.SetAccessLevel)    // /api/users/set-accesslevel : Set the access level of the user {email, accesslevel}
+	users.Post("/set-accesslevel", controllers.SetAccessLevel) // /api/users/set-accesslevel : Set the access level of the user {email, accesslevel}
 	/*
 		Until we find a better approach for this accesslevel problem...
 		Should we send a number, or string, maybe create a new DB table with these pairs?

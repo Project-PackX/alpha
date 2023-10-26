@@ -40,6 +40,7 @@ func DropTables() {
 	DB.Exec("DROP TABLE IF EXISTS public.lockers;")
 	DB.Exec("DROP TABLE IF EXISTS public.lockergroups;")
 	DB.Exec("DROP TABLE IF EXIST public.packageslockers")
+	DB.Exec("DROP TABLE IF EXIST public.reset_password_code")
 }
 
 // Migrating the DB tables into Go models
@@ -52,6 +53,7 @@ func SyncDB() {
 	DB.AutoMigrate(&models.Locker{})
 	DB.AutoMigrate(&models.LockerGroup{})
 	DB.AutoMigrate(&models.PackageLocker{})
+	DB.AutoMigrate(&models.ResetPasswordCode{})
 }
 
 // Generate test datas

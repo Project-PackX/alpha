@@ -3,7 +3,6 @@ package controllers
 import (
 	"database/sql"
 	"fmt"
-	"math/rand"
 
 	"time"
 
@@ -22,17 +21,6 @@ var BODY_ADD_PACKAGE = `
 	<p>You can track your package with this track ID:<em>%s</em></p>
 	<p>Sincerely,<br>PackX</br></p>
 `
-
-// Generate a random string (letters + numbers) with the given length
-func randomString(length int) string {
-	characters := []byte("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789")
-	bytes := make([]byte, length)
-	for i := range bytes {
-		bytes[i] = characters[rand.Intn(len(characters))]
-	}
-
-	return string(bytes)
-}
 
 // Just load a test html page
 func PostsIndex(c *fiber.Ctx) error {
@@ -129,7 +117,7 @@ func AddNewPackage(c *fiber.Ctx) error {
 	}
 
 	// Generate a random 6 digit number for the package code
-	pcode := randomString(6)
+	pcode := utils.RandomString(6)
 	csomag.Code = pcode
 
 	// Generate delivery date
@@ -137,16 +125,16 @@ func AddNewPackage(c *fiber.Ctx) error {
 	if csomag.DeliverySpeed == enums.DeliverySpeeds.Standard {
 		ddate = ddate.Add(time.Hour * 7 * 24) // Add 7 days
 	} else if csomag.DeliverySpeed == enums.DeliverySpeeds.Rapid {
-		ddate = ddate.Add(time.Hour * 7 * 24) // Add 3 days
+		ddate = ddate.Add(time.Hour * 3 * 24) // Add 3 days
 	} else if csomag.DeliverySpeed == enums.DeliverySpeeds.UltraRapid {
-		ddate = ddate.Add(time.Hour * 7 * 24) // Add 1 days
+		ddate = ddate.Add(time.Hour * 1 * 24) // Add 1 days
 	}
 
 	// In case it is same day, no need for else clause
 	csomag.DeliveryDate = ddate
 
 	// Generate TrackID
-	trackid := randomString(10)
+	trackid := utils.RandomString(10)
 	csomag.TrackID = trackid
 
 	// Inserting the new package

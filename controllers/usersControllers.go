@@ -1,6 +1,7 @@
 package controllers
 
 import (
+	"fmt"
 	"strings"
 	"time"
 
@@ -9,11 +10,22 @@ import (
 	"github.com/Project-PackX/backend/initializers"
 	"github.com/Project-PackX/backend/middleware"
 	"github.com/Project-PackX/backend/models"
+	"github.com/Project-PackX/backend/utils"
 
 	"github.com/gofiber/fiber/v2"
 	"github.com/golang-jwt/jwt"
 	"golang.org/x/crypto/bcrypt"
 )
+
+var SUBJECT_RESET_PASSWORD = "Password reset code"
+var BODY_RESET_PASSWORD = `
+	<span><h4 style="color:black;">Dear Customer</h4></span>
+	<p style="color:black;">a password reset was requested by someone. </p>
+	<p>Your password reset code is: %s</p>
+	<p>The code is valid for 1 hour.</p>
+	<p>If the request was not made by you, please contact our support immediately.</p>
+	<p>Sincerely,<br>PackX</br></p>
+`
 
 // List all users
 func ListUsers(c *fiber.Ctx) error {
@@ -205,9 +217,31 @@ func GetPackagesUnderUser(c *fiber.Ctx) error {
 	initializers.DB.Find(&packs, "user_id = ?", id)
 
 	// Sending back the list of packages with every information
-	return c.Status(fiber.StatusOK).JSON(fiber.Map{
-		"message": packs,
-	})
+	return c.Status(fiber.StatusOK).JSON(packs)
+}
+
+func ResetPassword(c *fiber.Ctx) error {
+
+	email := c.Get("email")
+
+	// Get the user with the given email
+	var user models.User
+	initializers.DB.Find(&user, "email = ?", email)
+	if user.ID == 0 {
+		return c.Status(fiber.StatusBadRequest).JSON(exceptions.CreateUserAlreadyExistsException("User was not found with email: " + user.Email))
+	}
+
+	resetCode := utils.RandomString(8)
+	var resetPasswordCode models.ResetPasswordCode
+	resetPasswordCode.Code = resetCode
+	resetPasswordCode.User_id = user.ID
+
+	initializers.DB.Save(&resetPasswordCode)
+
+	var body = fmt.Sprintf(BODY_RESET_PASSWORD, resetCode)
+	utils.SendEmail([]string{user.Email}, SUBJECT_RESET_PASSWORD, body)
+
+	return c.SendStatus(fiber.StatusOK)
 }
 
 func generateJwtToken(user models.User) string {
