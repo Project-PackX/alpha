@@ -9,11 +9,15 @@ services:
       - 8000:4444
     environment:
       - PORT # should be deprecated
+      - JWT_SECRET_KEY
       - POSTGRES_HOST
       - POSTGRES_USER
       - POSTGRES_PASSWORD
       - POSTGRES_DB
-      - JWT_SECRET_KEY
+      - SENDER_EMAIL_ADDRESS
+      - SENDER_EMAIL_PASSWORD
+      - SMTP_PORT
+      - EMAIL_HOST
     depends_on:
       packx-backend-db:
         condition: service_healthy
