@@ -220,7 +220,7 @@ func GetPackagesUnderUser(c *fiber.Ctx) error {
 	return c.Status(fiber.StatusOK).JSON(packs)
 }
 
-func ResetPassword(c *fiber.Ctx) error {
+func SendPasswordResetCode(c *fiber.Ctx) error {
 
 	email := c.Get("email")
 
@@ -268,6 +268,43 @@ func CheckResetCode(c *fiber.Ctx) error {
 	}
 
 	return c.SendStatus(fiber.StatusOK)
+}
+
+type passwordChangeInput struct {
+	Password      string
+	PasswordAgain string
+}
+
+func ResetPassword(c *fiber.Ctx) error {
+
+	passwordChangeInput := new(passwordChangeInput)
+
+	if err := c.BodyParser(passwordChangeInput); err != nil {
+		return c.Status(fiber.StatusBadRequest).JSON(exceptions.CreateInvalidInputException("Bad input format"))
+	}
+
+	if checkIfTwoPasswordsMatch(passwordChangeInput.Password, passwordChangeInput.PasswordAgain) {
+		return c.Status(fiber.StatusBadRequest).JSON(exceptions.CreateInvalidInputException("Passwords do not match"))
+	}
+
+	email := c.Get("email")
+
+	// Get the user with the given email
+	var user models.User
+	initializers.DB.Find(&user, "email = ?", email)
+	if user.ID == 0 {
+		return c.Status(fiber.StatusBadRequest).JSON(exceptions.CreateUserAlreadyExistsException("User was not found with email: " + user.Email))
+	}
+
+	hashedPassword, _ := bcrypt.GenerateFromPassword([]byte(passwordChangeInput.Password), 14)
+	user.Password = string(hashedPassword)
+	initializers.DB.Save(&user)
+
+	return c.SendStatus(fiber.StatusOK)
+}
+
+func checkIfTwoPasswordsMatch(pw1 string, pw2 string) bool {
+	return pw1 == pw2
 }
 
 func generateJwtToken(user models.User) string {
