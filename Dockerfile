@@ -1,3 +1,3 @@
 FROM scratch
-ENTRYPOINT ["/alpha"]
-COPY alpha /
+ENTRYPOINT ["/backend"]
+COPY backend /
