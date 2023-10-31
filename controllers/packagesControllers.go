@@ -240,6 +240,46 @@ func ChangeStatus(c *fiber.Ctx) error {
 	})
 }
 
+// Change package Status '+1'
+func ChangeStatusUp(c *fiber.Ctx) error {
+
+	newStatus := new(models.PackageStatus)
+
+	// Check error
+	if err := c.BodyParser(newStatus); err != nil {
+		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
+			"Message": "Hibás kérés",
+		})
+	}
+
+	// Get the right row
+	err := initializers.DB.Where("package_id = ?", newStatus.Package_id).First(&newStatus).Error
+
+	// Check error
+	if err != nil {
+		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
+			"Message": "Hibás kérés",
+		})
+	}
+
+	// Get current status id
+	statID := newStatus.Status_id
+
+	// Only update if not delivered yet
+	newStatID := statID
+	if newStatus.Status_id < 5 {
+		newStatID = newStatID + 1
+	}
+
+	// Update the StatusID
+	initializers.DB.Model(&models.PackageStatus{}).Where("package_id = ?", newStatus.Package_id).Update("status_id", newStatID)
+
+	// Return as OK
+	return c.Status(fiber.StatusOK).JSON(fiber.Map{
+		"Message": "Package status updated successfully",
+	})
+}
+
 func MakeCanceled(c *fiber.Ctx) error {
 	id := c.Params("id")
 
