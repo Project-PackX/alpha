@@ -39,6 +39,20 @@ func ListUsersWithPackages(c *fiber.Ctx) error {
 	})
 }
 
+// Get all package info wchich belong to the specific courier id based on URL
+func GetPackagesUnderCourier(c *fiber.Ctx) error {
+
+	// Getting the {cid} from URL
+	cid := c.Params("id")
+
+	// Getting the packs from the desired courier
+	var packs []models.Package
+	initializers.DB.Find(&packs, "courier_id = ?", cid)
+
+	// Sending back the list of packages with every information
+	return c.Status(fiber.StatusOK).JSON(packs)
+}
+
 // Return the package status based on the {id} in the URL
 func GetPackageStatus(c *fiber.Ctx) error {
 

@@ -20,13 +20,14 @@ func Routes(app *fiber.App) {
 	// From this point, all package endpoints are being authenticated
 	packages.Use(middleware.RequireJwtTokenAuth)
 
-	packages.Get("/all", controllers.ListPackages)               // /api/packages/all : Listing all packages
-	packages.Post("/new", controllers.AddNewPackage)             // /api/packages/new : Inserting new package via input json
-	packages.Delete("/:id", controllers.DeletePackageByID)       // /api/packages/{id} : Delete package based on pathvariable 'id'
-	packages.Get("/getstatus/:id", controllers.GetPackageStatus) // /api/packages/getstatus/{id} : Getting the {id}. package status
-	packages.Post("/statusup", controllers.ChangeStatusUp)       // /api/packages/statusup : Increnent package status via inpus json
-	packages.Post("/change-status", controllers.ChangeStatus)    // /api/packages/change-status : Change a package status via input JSON (ID, NewStatusID)
-	packages.Post("/cancel/:id", controllers.MakeCanceled)       // /api/packages/cancel/{id} : Make canceled a package based on pathvariable 'id'
+	packages.Get("/all", controllers.ListPackages)                            // /api/packages/all : Listing all packages
+	packages.Post("/new", controllers.AddNewPackage)                          // /api/packages/new : Inserting new package via input json
+	packages.Delete("/:id", controllers.DeletePackageByID)                    // /api/packages/{id} : Delete package based on pathvariable 'id'
+	packages.Get("/getstatus/:id", controllers.GetPackageStatus)              // /api/packages/getstatus/{id} : Getting the {id}. package status
+	packages.Post("/statusup", controllers.ChangeStatusUp)                    // /api/packages/statusup : Increnent package status via inpus json
+	packages.Get("/courierpackages/:id", controllers.GetPackagesUnderCourier) // /api/packages/courierpackages/:id : Get packages under desired courier
+	packages.Post("/change-status", controllers.ChangeStatus)                 // /api/packages/change-status : Change a package status via input JSON (ID, NewStatusID)
+	packages.Post("/cancel/:id", controllers.MakeCanceled)                    // /api/packages/cancel/{id} : Make canceled a package based on pathvariable 'id'
 
 	users := api.Group("/users")
 
