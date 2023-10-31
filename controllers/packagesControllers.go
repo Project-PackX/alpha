@@ -4,8 +4,6 @@ import (
 	"database/sql"
 	"fmt"
 
-	"time"
-
 	"github.com/Project-PackX/backend/enums"
 	"github.com/Project-PackX/backend/initializers"
 	"github.com/Project-PackX/backend/models"
@@ -119,19 +117,6 @@ func AddNewPackage(c *fiber.Ctx) error {
 	// Generate a random 6 digit number for the package code
 	pcode := utils.RandomString(6)
 	csomag.Code = pcode
-
-	// Generate delivery date
-	ddate := time.Now()
-	if csomag.DeliverySpeed == enums.DeliverySpeeds.Standard {
-		ddate = ddate.Add(time.Hour * 7 * 24) // Add 7 days
-	} else if csomag.DeliverySpeed == enums.DeliverySpeeds.Rapid {
-		ddate = ddate.Add(time.Hour * 3 * 24) // Add 3 days
-	} else if csomag.DeliverySpeed == enums.DeliverySpeeds.UltraRapid {
-		ddate = ddate.Add(time.Hour * 1 * 24) // Add 1 days
-	}
-
-	// In case it is same day, no need for else clause
-	csomag.DeliveryDate = ddate
 
 	// Generate TrackID
 	trackid := utils.RandomString(10)
