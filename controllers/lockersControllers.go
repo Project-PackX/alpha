@@ -1,6 +1,7 @@
 package controllers
 
 import (
+	"fmt"
 	"math"
 
 	"github.com/Project-PackX/backend/exceptions"
@@ -57,10 +58,31 @@ func ListLockers(c *fiber.Ctx) error {
 		})
 	}
 
+	var npacks []int
+	var percents []float64
+
+	for i := 0; i < len(lockers); i++ {
+
+		var temp []models.PackageLocker
+		initializers.DB.Find(&temp, "locker_id = ?", lockers[i].ID)
+		fmt.Println(temp)
+
+		nPackages := len(temp)
+
+		percent := float64(nPackages) / float64(lockers[i].Capacity)
+		percent = math.Round(percent * 100)
+
+		npacks = append(npacks, nPackages)
+		percents = append(percents, percent)
+
+	}
+
 	// Returning the lockers
 	return c.Status(fiber.StatusOK).JSON(fiber.Map{
-		"message": "Success",
-		"lockers": lockers,
+		"message":          "Success",
+		"lockers":          lockers,
+		"numberofpackages": npacks,
+		"percents":         percents,
 	})
 }
 
