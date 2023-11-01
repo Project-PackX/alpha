@@ -20,6 +20,14 @@ var BODY_ADD_PACKAGE = `
 	<p>Sincerely,<br>PackX</br></p>
 `
 
+var SUBJECT_PACKAGE_STATUS_MODIFIED = "The status of your package has changed"
+var BODY_PACKAGE_STATUS_MODIFIED = `
+	<span><h4 style="color:black;">Dear Customer, your package status has changed</h4></span>
+	<p style="color:black;">Status: <em>%s</em><br></p>
+	<p>Track ID: <em>%s</em></p>
+	<p>Sincerely,<br>PackX</br></p>
+`
+
 // Just load a test html page
 func PostsIndex(c *fiber.Ctx) error {
 	return c.Render("packs/index", fiber.Map{})
@@ -253,17 +261,23 @@ func ListPackageByID(c *fiber.Ctx) error {
 func ChangeStatus(c *fiber.Ctx) error {
 
 	// Making a package model with the given parameters
-	newPackage := new(models.PackageStatus)
+	newPackageStatus := new(models.PackageStatus)
 
 	// Check error
-	if err := c.BodyParser(newPackage); err != nil {
-		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
-			"Message": "Hibás kérés",
-		})
+	if err := c.BodyParser(newPackageStatus); err != nil {
+		return c.SendStatus(fiber.StatusBadRequest)
 	}
 
 	// Update the StatusID based on the ID
-	initializers.DB.Model(&models.PackageStatus{}).Where("package_id = ?", newPackage.Package_id).Update("status_id", newPackage.Status_id)
+	initializers.DB.Model(&models.PackageStatus{}).Where("package_id = ?", newPackageStatus.Package_id).Update("status_id", newPackageStatus.Status_id)
+
+	var csomag *models.Package
+	var status *models.Status
+	initializers.DB.Find(&csomag, "ID = ?", newPackageStatus.Package_id)
+	initializers.DB.Find(&status, "ID = ?", newPackageStatus.Status_id)
+
+	var body = fmt.Sprintf(BODY_ADD_PACKAGE, status.Name, csomag.TrackID)
+	utils.SendEmail([]string{csomag.ReceiverEmail}, SUBJECT_PACKAGE_STATUS_MODIFIED, body)
 
 	// Return as OK
 	return c.Status(fiber.StatusOK).JSON(fiber.Map{
