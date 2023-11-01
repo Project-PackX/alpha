@@ -26,6 +26,7 @@ var BODY_RESET_PASSWORD = `
 	<p>If the request was not made by you, please contact our support immediately.</p>
 	<p>Sincerely,<br>PackX</br></p>
 `
+var NUM_DIGITS_RESET_CODE = 14
 
 // List all users
 func ListUsers(c *fiber.Ctx) error {
@@ -231,7 +232,7 @@ func SendPasswordResetCode(c *fiber.Ctx) error {
 		return c.Status(fiber.StatusBadRequest).JSON(exceptions.CreateUserAlreadyExistsException("User was not found with email: " + user.Email))
 	}
 
-	resetCode := utils.RandomString(8)
+	resetCode := utils.RandomString(NUM_DIGITS_RESET_CODE)
 	var resetPasswordCode models.ResetPasswordCode
 	resetPasswordCode.Code = resetCode
 	resetPasswordCode.User_id = user.ID
