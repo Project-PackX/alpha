@@ -65,15 +65,16 @@ func ListLockers(c *fiber.Ctx) error {
 
 		var temp []models.PackageLocker
 		initializers.DB.Find(&temp, "locker_id = ?", lockers[i].ID)
+
 		fmt.Println(temp)
 
-		nPackages := len(temp)
+		nPackages := int(len(temp))
 
 		percent := float64(nPackages) / float64(lockers[i].Capacity)
 		percent = math.Round(percent * 100)
 
 		npacks = append(npacks, nPackages)
-		percents = append(percents, percent)
+		percents = append(percents, float64(percent))
 
 	}
 
