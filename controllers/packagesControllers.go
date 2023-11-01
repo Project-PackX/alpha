@@ -49,8 +49,25 @@ func GetPackagesUnderCourier(c *fiber.Ctx) error {
 	var packs []models.Package
 	initializers.DB.Find(&packs, "courier_id = ?", cid)
 
+	var stats []string
+	for i := 0; i < len(packs); i++ {
+
+		// Getting the package status code from the packagestatus table
+		var statusindex models.PackageStatus
+		initializers.DB.Find(&statusindex, "package_id = ?", packs[i].ID)
+
+		// Getting the right status row in the status table
+		var statusname models.Status
+		initializers.DB.Find(&statusname, "id = ?", statusindex.Status_id)
+
+		stats = append(stats, statusname.Name)
+	}
+
 	// Sending back the list of packages with every information
-	return c.Status(fiber.StatusOK).JSON(packs)
+	return c.Status(fiber.StatusOK).JSON(fiber.Map{
+		"packages": packs,
+		"statuses": stats,
+	})
 }
 
 // Return the package status based on the {id} in the URL
