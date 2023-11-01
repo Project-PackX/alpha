@@ -39,8 +39,8 @@ func DropTables() {
 	DB.Exec("DROP TABLE IF EXISTS public.couriers;")
 	DB.Exec("DROP TABLE IF EXISTS public.lockers;")
 	DB.Exec("DROP TABLE IF EXISTS public.lockergroups;")
-	DB.Exec("DROP TABLE IF EXIST public.packageslockers")
-	DB.Exec("DROP TABLE IF EXIST public.reset_password_code")
+	DB.Exec("DROP TABLE IF EXISTS public.packageslockers")
+	DB.Exec("DROP TABLE IF EXISTS public.reset_password_code")
 }
 
 // Migrating the DB tables into Go models
