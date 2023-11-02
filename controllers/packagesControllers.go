@@ -296,9 +296,7 @@ func ChangeStatusUp(c *fiber.Ctx) error {
 
 	// Check error
 	if err != nil {
-		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
-			"Message": "Hibás kérés",
-		})
+		return c.SendStatus(fiber.StatusBadRequest)
 	}
 
 	// Get current status id
@@ -312,6 +310,14 @@ func ChangeStatusUp(c *fiber.Ctx) error {
 
 	// Update the StatusID
 	initializers.DB.Model(&models.PackageStatus{}).Where("package_id = ?", ps.Package_id).Update("status_id", newStatID)
+
+	var csomag *models.Package
+	var status *models.Status
+	initializers.DB.Find(&csomag, "ID = ?", ps.Package_id)
+	initializers.DB.Find(&status, "ID = ?", ps.Status_id)
+
+	var body = fmt.Sprintf(BODY_ADD_PACKAGE, status.Name, csomag.TrackID)
+	utils.SendEmail([]string{csomag.ReceiverEmail}, SUBJECT_PACKAGE_STATUS_MODIFIED, body)
 
 	// Return as OK
 	return c.Status(fiber.StatusOK).JSON(fiber.Map{
