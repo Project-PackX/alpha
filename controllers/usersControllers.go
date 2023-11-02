@@ -136,6 +136,7 @@ func Login(c *fiber.Ctx) error {
 }
 
 func EditUser(c *fiber.Ctx) error {
+
 	userInput := new(models.User)
 	if err := c.BodyParser(userInput); err != nil {
 		return c.Status(fiber.StatusBadRequest).JSON(exceptions.CreateInvalidInputException("Bad input format"))

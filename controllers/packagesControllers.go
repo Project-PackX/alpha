@@ -173,9 +173,20 @@ func AddNewPackage(c *fiber.Ctx) error {
 	// Error handling
 	if result.Error != nil || saveResult.Error != nil {
 		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
-			"Message": "Hiba történt a csomag létrehozása közben",
+			"Message": "Something went wrong when creating the package",
 		})
 	}
+
+	var packageToSenderLocker models.PackageLocker
+	packageToSenderLocker.Package_id = csomag.ID
+	packageToSenderLocker.Locker_id = csomag.SenderLockerId
+
+	var packageToDestinationLocker models.PackageLocker
+	packageToDestinationLocker.Package_id = csomag.ID
+	packageToDestinationLocker.Locker_id = csomag.DestinationLockerId
+
+	initializers.DB.Save(packageToSenderLocker)
+	initializers.DB.Save(packageToDestinationLocker)
 
 	var sender *models.User
 	var senderLocker *models.Locker

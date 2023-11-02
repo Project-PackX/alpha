@@ -19,8 +19,8 @@ type Package struct {
 	*/
 	TrackID             string    // Code for package tracking
 	UserID              uint      // Sender user's id
-	SenderLockerId      string    // Sender locker's id
-	DestinationLockerId string    // Destination locker's id
+	SenderLockerId      uint      // Sender locker's id
+	DestinationLockerId uint      // Destination locker's id
 	ReceiverName        string    // Name of the person who gets the package
 	ReceiverEmail       string    // Email of the person who gets the package
 	Size                string    // Could be small, medium or large

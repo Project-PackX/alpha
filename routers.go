@@ -45,7 +45,7 @@ func Routes(app *fiber.App) {
 	// From this point, all user endpoints are being authenticated
 	users.Use(middleware.RequireJwtTokenAuth)
 
-	users.Put("/:id", controllers.EditUser) // /api/users : Edit User
+	users.Put("/:id", controllers.EditUser) // /api/users/{id} : Edit User
 
 	users.Get("/get-accesslevel/:id", controllers.GetAccessLevel) // /api/users/get-accesslevel/{id} : Get the access level of the {id}. user
 
@@ -67,10 +67,6 @@ func Routes(app *fiber.App) {
 
 	lockers.Post("/new", controllers.AddNewLocker) // /api/lockers/new : Add new locker via input json
 
-	lockers.Get("/get-packages/:id", controllers.GetPackagesByLockerID) // /api/lockers/get-packages/{id} : Get all the information about the packages that are in the {id}. locker
-	lockers.Get("/get-fullness/:id", controllers.GetFullness)           // /api/lockers/get-fullness/{id} : Get the fullness stats (cap, number of package, percentage) of the {id}. locker
-
-	/* I guess we don't need this anymore, but I leave it here
-	lockers.Get("/lockers-by-group/:groupid", controllers.ListLockersByGroup) // /api/lockers/lockers-by-group/{groupid} : List all the lockers in the {groupid} group
-	*/
+	lockers.Get("/packages/:id", controllers.GetPackagesByLockerID) // /api/lockers/packages/{id} : Get all the information about the packages that are in the {id}. locker
+	lockers.Get("/fullness/:id", controllers.GetFullness)           // /api/lockers/fullness/{id} : Get the fullness stats (cap, number of package, percentage) of the {id}. locker
 }

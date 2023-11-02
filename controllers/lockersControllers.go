@@ -140,18 +140,18 @@ func GetFullness(c *fiber.Ctx) error {
 	cap := locker.Capacity
 
 	// Getting the number of packages in the locker
-	var temp []models.PackageLocker
-	initializers.DB.Find(&temp, "locker_id = ?", id)
+	var packagesToLockers []models.PackageLocker
+	initializers.DB.Find(&packagesToLockers, "locker_id = ?", id)
 
-	nPackages := len(temp)
+	nPackages := len(packagesToLockers)
 
 	percent := float64(nPackages) / float64(cap)
 	percent = math.Round(percent * 100)
 
 	// Return the datas
 	return c.Status(fiber.StatusOK).JSON(fiber.Map{
-		"Capacity":      cap,
-		"PackageNumber": nPackages,
-		"Percent":       percent,
+		"capacity":      cap,
+		"packageNumber": nPackages,
+		"percent":       percent,
 	})
 }
