@@ -14,6 +14,11 @@ func SendEmail(recipientEmails []string, subject string, body string) error {
 	SMTP_PORT, _ := strconv.Atoi(os.Getenv("SMTP_PORT"))
 	EMAIL_HOST := os.Getenv("EMAIL_HOST")
 
+	fmt.Println("SenderEmailAddress: " + SenderEmailAddress)
+	fmt.Println("SenderEmailPassword: " + SenderEmailPassword)
+	fmt.Println("SMTP_PORT: " + os.Getenv("SMTP_PORT"))
+	fmt.Println("EMAIL_HOST: " + EMAIL_HOST)
+
 	for _, recipientEmailAddress := range recipientEmails {
 		message := gomail.NewMessage()
 		message.SetHeader("From", SenderEmailAddress)
@@ -24,8 +29,11 @@ func SendEmail(recipientEmails []string, subject string, body string) error {
 		dialer := gomail.NewDialer(EMAIL_HOST, SMTP_PORT, SenderEmailAddress, SenderEmailPassword)
 
 		if err := dialer.DialAndSend(message); err != nil {
+			fmt.Println("Error when sending the email to: " + recipientEmailAddress + "\nError: ")
 			fmt.Println(err)
 		}
+
+		fmt.Println("Email has been sent to: " + recipientEmailAddress + "\nfrom: " + SenderEmailAddress)
 	}
 
 	return nil
