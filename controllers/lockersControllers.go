@@ -150,8 +150,8 @@ func GetFullness(c *fiber.Ctx) error {
 
 	// Return the datas
 	return c.Status(fiber.StatusOK).JSON(fiber.Map{
-		"capacity":      cap,
-		"packageNumber": nPackages,
-		"percent":       percent,
+		"Capacity":      cap,
+		"PackageNumber": nPackages,
+		"Percent":       percent,
 	})
 }
