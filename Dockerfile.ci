@@ -1,3 +1,15 @@
+FROM alpine
+
+# add ca certificates and timezone data files
+RUN apk update && apk add ca-certificates tzdata && rm -rf /var/cache/apk/*
+
 FROM scratch
+
+# add-in our ca certificates
+COPY --from=builder /etc/ssl/certs/ca-certificates.crt /etc/ssl/certs/
+
+# add-in our timezone data file
+COPY --from=builder /usr/share/zoneinfo /usr/share/zoneinfo
+
 ENTRYPOINT ["/backend"]
 COPY backend /
