@@ -1,4 +1,4 @@
-FROM alpine
+FROM alpine AS builder
 
 # add ca certificates and timezone data files
 RUN apk update && apk add ca-certificates tzdata && rm -rf /var/cache/apk/*
