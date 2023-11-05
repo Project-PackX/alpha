@@ -112,7 +112,7 @@ func Login(c *fiber.Ctx) error {
 
 	// Search for the email in DB
 	var userMatch models.User
-	initializers.DB.First(&userMatch, "email = ?", loginEmail)
+	initializers.DB.Where("email = ?", loginEmail).First(&userMatch)
 
 	if userMatch.ID == 0 {
 		return c.Status(fiber.StatusNotFound).JSON(fiber.Map{
@@ -128,10 +128,8 @@ func Login(c *fiber.Ctx) error {
 	}
 
 	return c.Status(fiber.StatusAccepted).JSON(fiber.Map{
-		"token":   generateJwtToken(userMatch),
-		"message": "Login successful",
-		"name":    userMatch.Name,
-		"email":   userMatch.Email,
+		"token": generateJwtToken(userMatch),
+		"user":  userMatch,
 	})
 }
 
