@@ -228,7 +228,7 @@ func SendPasswordResetCode(c *fiber.Ctx) error {
 
 	// Get the user with the given email
 	var user models.User
-	initializers.DB.Find(&user, "email = ?", email)
+	initializers.DB.Where("email = ?", email).Find(&user)
 	if user.ID == 0 {
 		return c.Status(fiber.StatusBadRequest).JSON(exceptions.CreateUserAlreadyExistsException("User was not found with email: " + user.Email))
 	}
