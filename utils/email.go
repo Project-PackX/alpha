@@ -14,8 +14,8 @@ func SendEmail(recipientEmails []string, subject string, body string) error {
 	SMTP_PORT, _ := strconv.Atoi(os.Getenv("SMTP_PORT"))
 	EMAIL_HOST := os.Getenv("EMAIL_HOST")
 
-	fmt.Println("Sender Email Address: " + SenderEmailAddress)
-	fmt.Println("Email Host: " + EMAIL_HOST + ":" + os.Getenv("SMTP_PORT"))
+	// fmt.Println("Sender Email Address: " + SenderEmailAddress)
+	// fmt.Println("Email Host: " + EMAIL_HOST + ":" + os.Getenv("SMTP_PORT"))
 
 	for _, recipientEmailAddress := range recipientEmails {
 		message := gomail.NewMessage()

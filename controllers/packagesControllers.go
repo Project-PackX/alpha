@@ -143,6 +143,32 @@ func AddNewPackage(c *fiber.Ctx) error {
 		})
 	}
 
+	var senderLocker *models.Locker
+	var destinationLocker *models.Locker
+
+	initializers.DB.Find(&senderLocker, "ID = ?", csomag.SenderLockerId)
+	initializers.DB.Find(&destinationLocker, "ID = ?", csomag.DestinationLockerId)
+
+	var packagesToSenderLocker []models.PackageLocker
+	var packagesToDestinationLocker []models.PackageLocker
+	initializers.DB.Find(&packagesToSenderLocker, "locker_id = ?", csomag.SenderLockerId)
+	initializers.DB.Find(&packagesToDestinationLocker, "locker_id = ?", csomag.DestinationLockerId)
+
+	nPackagesSenderLocker := len(packagesToSenderLocker)
+	nPackagesDestinationLocker := len(packagesToDestinationLocker)
+
+	if senderLocker.Capacity <= uint(nPackagesSenderLocker) {
+		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
+			"Message": "Sender locker's capacity is full",
+		})
+	}
+
+	if destinationLocker.Capacity <= uint(nPackagesDestinationLocker) {
+		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
+			"Message": "Destination locker's capacity is full",
+		})
+	}
+
 	// Get the size of a package
 	meret := csomag.Size
 	if meret == "small" {
@@ -189,12 +215,8 @@ func AddNewPackage(c *fiber.Ctx) error {
 	initializers.DB.Save(packageToDestinationLocker)
 
 	var sender *models.User
-	var senderLocker *models.Locker
-	var destinationLocker *models.Locker
 
 	initializers.DB.Find(&sender, "ID = ?", csomag.UserID)
-	initializers.DB.Find(&senderLocker, "ID = ?", csomag.SenderLockerId)
-	initializers.DB.Find(&destinationLocker, "ID = ?", csomag.DestinationLockerId)
 
 	var body = fmt.Sprintf(BODY_ADD_PACKAGE, senderLocker.City+", "+senderLocker.Address, destinationLocker.City+", "+destinationLocker.Address, csomag.TrackID)
 	utils.SendEmail([]string{csomag.ReceiverEmail, sender.Email}, SUBJECT_ADD_PACKAGE, body)
@@ -215,13 +237,13 @@ func DeletePackageByID(c *fiber.Ctx) error {
 	// Error handling
 	if result.Error != nil {
 		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
-			"Message": "Hiba történt a csomag törlése közben",
+			"Message": "Error during the deletion of the package",
 		})
 	}
 
 	// Return as OK
 	return c.Status(fiber.StatusOK).JSON(fiber.Map{
-		"Message": "Csomag sikeresen törölve",
+		"Message": "Package deleted successfully",
 	})
 }
 
@@ -287,8 +309,16 @@ func ChangeStatus(c *fiber.Ctx) error {
 	initializers.DB.Find(&csomag, "ID = ?", newPackageStatus.Package_id)
 	initializers.DB.Find(&status, "ID = ?", newPackageStatus.Status_id)
 
-	var body = fmt.Sprintf(BODY_ADD_PACKAGE, status.Name, csomag.TrackID)
+	var body = fmt.Sprintf(BODY_PACKAGE_STATUS_MODIFIED, status.Name, csomag.TrackID)
 	utils.SendEmail([]string{csomag.ReceiverEmail}, SUBJECT_PACKAGE_STATUS_MODIFIED, body)
+
+	if status.Name == enums.Statuses.Warehouse {
+		initializers.DB.Where("package_id = ? AND locker_id = ?", newPackageStatus.Package_id, csomag.SenderLockerId).Delete(&models.PackageLocker{})
+	}
+
+	if status.Name == enums.Statuses.Delivered {
+		initializers.DB.Where("package_id = ? AND locker_id = ?", newPackageStatus.Package_id, csomag.DestinationLockerId).Delete(&models.PackageLocker{})
+	}
 
 	// Return as OK
 	return c.Status(fiber.StatusOK).JSON(fiber.Map{
@@ -327,19 +357,30 @@ func ChangeStatusUp(c *fiber.Ctx) error {
 	initializers.DB.Find(&csomag, "ID = ?", ps.Package_id)
 	initializers.DB.Find(&status, "ID = ?", ps.Status_id)
 
-	var body = fmt.Sprintf(BODY_ADD_PACKAGE, status.Name, csomag.TrackID)
+	var body = fmt.Sprintf(BODY_PACKAGE_STATUS_MODIFIED, status.Name, csomag.TrackID)
 	utils.SendEmail([]string{csomag.ReceiverEmail}, SUBJECT_PACKAGE_STATUS_MODIFIED, body)
 
+	if status.Name == enums.Statuses.Warehouse {
+		initializers.DB.Where("package_id = ? AND locker_id = ?", ps.Package_id, csomag.SenderLockerId).Delete(&models.PackageLocker{})
+	}
+
+	if status.Name == enums.Statuses.Delivered {
+		initializers.DB.Where("package_id = ? AND locker_id = ?", ps.Package_id, csomag.DestinationLockerId).Delete(&models.PackageLocker{})
+	}
+
 	// Return as OK
-	return c.Status(fiber.StatusOK).JSON(fiber.Map{
-		"Message": "Package status updated successfully",
-	})
+	return c.Status(fiber.StatusOK).JSON(status)
 }
 
 func MakeCanceled(c *fiber.Ctx) error {
 	id := c.Params("id")
 
-	initializers.DB.Model(&models.PackageStatus{}).Where("package_id = ?", id).Update("status_id", 6)
+	initializers.DB.Model(&models.Package{}).Where("package_id = ?", id).Update("status_id", 6)
+
+	var csomag *models.Package
+	initializers.DB.Where("package_id = ?", id).Find(&csomag)
+
+	initializers.DB.Where("package_id = ? AND locker_id = ?", id, csomag.DestinationLockerId).Delete(&models.PackageLocker{})
 
 	// Return as OK
 	return c.Status(fiber.StatusOK).JSON(fiber.Map{
