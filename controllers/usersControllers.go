@@ -255,7 +255,7 @@ func CheckResetCode(c *fiber.Ctx) error {
 	}
 
 	var resetPasswordCode models.ResetPasswordCode
-	initializers.DB.Find(&resetPasswordCode, "code = ?", code)
+	initializers.DB.Where("code = ?", code).Find(&resetPasswordCode)
 
 	if resetPasswordCode.ID == 0 {
 		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
@@ -263,7 +263,7 @@ func CheckResetCode(c *fiber.Ctx) error {
 		})
 	}
 
-	if resetPasswordCode.CreatedAt.UnixNano() <= time.Now().Add(time.Hour*1).UnixNano() {
+	if time.Now().UnixNano()-resetPasswordCode.CreatedAt.UnixNano() > 3600000000000 {
 		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
 			"message": "Code is invalid",
 		})
@@ -279,13 +279,13 @@ type passwordChangeInput struct {
 
 func ResetPassword(c *fiber.Ctx) error {
 
-	passwordChangeInput := new(passwordChangeInput)
+	var passwordChangeInput = new(passwordChangeInput)
 
 	if err := c.BodyParser(passwordChangeInput); err != nil {
 		return c.Status(fiber.StatusBadRequest).JSON(exceptions.CreateInvalidInputException("Bad input format"))
 	}
 
-	if checkIfTwoPasswordsMatch(passwordChangeInput.Password, passwordChangeInput.PasswordAgain) {
+	if !doTwoPasswordsMatch(passwordChangeInput.Password, passwordChangeInput.PasswordAgain) {
 		return c.Status(fiber.StatusBadRequest).JSON(exceptions.CreateInvalidInputException("Passwords do not match"))
 	}
 
@@ -293,7 +293,7 @@ func ResetPassword(c *fiber.Ctx) error {
 
 	// Get the user with the given email
 	var user models.User
-	initializers.DB.Find(&user, "email = ?", email)
+	initializers.DB.Where("email = ?", email).Find(&user)
 	if user.ID == 0 {
 		return c.Status(fiber.StatusBadRequest).JSON(exceptions.CreateUserAlreadyExistsException("User was not found with email: " + user.Email))
 	}
@@ -305,7 +305,7 @@ func ResetPassword(c *fiber.Ctx) error {
 	return c.SendStatus(fiber.StatusOK)
 }
 
-func checkIfTwoPasswordsMatch(pw1 string, pw2 string) bool {
+func doTwoPasswordsMatch(pw1 string, pw2 string) bool {
 	return pw1 == pw2
 }
 
