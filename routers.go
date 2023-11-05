@@ -53,6 +53,8 @@ func Routes(app *fiber.App) {
 
 	users.Get("/:id/packages", controllers.GetPackagesUnderUser) // /api/users/{id}/packages : Get all packages which the {id}. user sent
 
+	users.Delete("/:id", controllers.DeleteUserById) // api/users/{id} Delete user by id
+
 	// users.Get("/packages", controllers.GetPackagesUnderUsers) "// csomagok.Get("/uwp", controllers.ListUsersWithPackages" Instead of this, use the users/packages or just get all of the packages
 
 	lockers := api.Group("/lockers")

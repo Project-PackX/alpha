@@ -173,6 +173,29 @@ func EditUser(c *fiber.Ctx) error {
 	return c.Status(fiber.StatusAccepted).JSON(userToEdit)
 }
 
+func DeleteUserById(c *fiber.Ctx) error {
+
+	id := c.Params("id")
+	tokenString := c.Get("Authorization")
+
+	var userToDelete models.User
+	initializers.DB.Where("id = ?", id).Find(&userToDelete)
+
+	if userToDelete.ID == 0 {
+		return c.Status(fiber.StatusNotFound).JSON(fiber.Map{
+			"message": "User was not found",
+		})
+	}
+
+	if !userIsAllowedToDelete(userToDelete, tokenString) {
+		c.SendStatus(fiber.StatusForbidden)
+	}
+
+	initializers.DB.Unscoped().Where("id = ?", id).Delete(&models.User{})
+
+	return c.SendStatus(fiber.StatusOK)
+}
+
 // Get the access of the user based on URL {id}
 func GetAccessLevel(c *fiber.Ctx) error {
 
@@ -324,4 +347,18 @@ func generateJwtToken(user models.User) string {
 	}
 
 	return signedToken
+}
+
+func userIsAllowedToDelete(user models.User, tokenString string) bool {
+	token, _ := jwt.Parse(tokenString, func(token *jwt.Token) (interface{}, error) {
+		return []byte(middleware.SecretKey), nil
+	})
+
+	claims, _ := token.Claims.(jwt.MapClaims)
+
+	tokenUserId := claims["user_id"]
+	var deleterUser models.User
+	initializers.DB.Where("id = ?", tokenUserId).Find(&deleterUser)
+
+	return (tokenUserId != user.ID && deleterUser.AccessLevel == 3) || (deleterUser.ID == user.ID)
 }
