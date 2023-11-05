@@ -146,10 +146,7 @@ func GetUserById(c *fiber.Ctx) error {
 		})
 	}
 
-	return c.Status(fiber.StatusOK).JSON(fiber.Map{
-		"token": generateJwtToken(user),
-		"user":  user,
-	})
+	return c.Status(fiber.StatusOK).JSON(user)
 }
 
 func EditUser(c *fiber.Ctx) error {
