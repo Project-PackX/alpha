@@ -133,6 +133,25 @@ func Login(c *fiber.Ctx) error {
 	})
 }
 
+func GetUserById(c *fiber.Ctx) error {
+
+	id := c.Params("id")
+
+	var user models.User
+	initializers.DB.Where("id = ?", id).First(&user)
+
+	if user.ID == 0 {
+		return c.Status(fiber.StatusNotFound).JSON(fiber.Map{
+			"message": "User was not found",
+		})
+	}
+
+	return c.Status(fiber.StatusOK).JSON(fiber.Map{
+		"token": generateJwtToken(user),
+		"user":  user,
+	})
+}
+
 func EditUser(c *fiber.Ctx) error {
 
 	userInput := new(models.User)

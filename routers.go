@@ -45,6 +45,8 @@ func Routes(app *fiber.App) {
 	// From this point, all user endpoints are being authenticated
 	users.Use(middleware.RequireJwtTokenAuth)
 
+	users.Get("/:id", controllers.GetUserById) // /api/users/{id} : Get User by Id
+
 	users.Put("/:id", controllers.EditUser) // /api/users/{id} : Edit User
 
 	users.Get("/get-accesslevel/:id", controllers.GetAccessLevel) // /api/users/get-accesslevel/{id} : Get the access level of the {id}. user
