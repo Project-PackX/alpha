@@ -187,6 +187,9 @@ func AddNewPackage(c *fiber.Ctx) error {
 	trackid := utils.RandomString(10)
 	csomag.TrackID = trackid
 
+	// Calculate CO2 savings
+	csomag.Co2 = utils.CalculateEmissionDifference(utils.CalculateDistance(senderLocker.Latitude, senderLocker.Longitude, destinationLocker.Latitude, destinationLocker.Longitude))
+
 	// Inserting the new package
 	result := initializers.DB.Create(&csomag)
 
@@ -267,17 +270,13 @@ func ListPackageByID(c *fiber.Ctx) error {
 	var statusname models.Status
 	initializers.DB.Find(&statusname, "id = ?", statusindex.Status_id)
 
-	// Error handling
 	if err != nil {
-		// If there are no package with that {id}
 		if err == sql.ErrNoRows {
 			c.Status(fiber.StatusNotFound).JSON(fiber.Map{
-				"Message": "Nincs ilyen azonosítójú csomag",
+				"Message": "There is no package with such ID",
 			})
-		} else { // Other error happened during the query
-			c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
-				"Message": "Hiba történt a lekérdezés közben",
-			})
+		} else {
+			c.SendStatus(fiber.StatusInternalServerError)
 		}
 		return err
 	}
@@ -382,8 +381,25 @@ func MakeCanceled(c *fiber.Ctx) error {
 
 	initializers.DB.Where("package_id = ? AND locker_id = ?", id, csomag.DestinationLockerId).Delete(&models.PackageLocker{})
 
-	// Return as OK
 	return c.Status(fiber.StatusOK).JSON(fiber.Map{
 		"Message": "Package successfully canceled",
+	})
+}
+
+func GetAllAndPerPackageEmission(c *fiber.Ctx) error {
+
+	var packages []models.Package
+	initializers.DB.Find(&packages)
+
+	all := 0.0
+	for _, _package := range packages {
+		all += _package.Co2
+	}
+
+	emissionPerPackage := all / float64(len(packages))
+
+	return c.Status(fiber.StatusOK).JSON(fiber.Map{
+		"All":                all,
+		"EmissionPerPackage": emissionPerPackage,
 	})
 }

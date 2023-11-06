@@ -237,51 +237,65 @@ func GenerateTestEntries() {
 	// Lockers
 
 	locker1 := models.Locker{
-		City:     "Győr",
-		Address:  "Szent István út 23.",
-		Capacity: 7,
+		City:      "Győr",
+		Address:   "Szent István út 23.",
+		Capacity:  7,
+		Latitude:  47.683337112393474,
+		Longitude: 17.623955422088322,
 	}
 	DB.Create(&locker1)
 
 	locker2 := models.Locker{
-		City:     "Győr",
-		Address:  "Kiss Ernő utca 5.",
-		Capacity: 5,
+		City:      "Győr",
+		Address:   "Kiss Ernő utca 5.",
+		Capacity:  5,
+		Latitude:  47.68834622211481,
+		Longitude: 17.623955422088322,
 	}
 	DB.Create(&locker2)
 
 	locker3 := models.Locker{
-		City:     "Győr",
-		Address:  "Lomnic utca 30.",
-		Capacity: 5,
+		City:      "Győr",
+		Address:   "Lomnic utca 30.",
+		Capacity:  5,
+		Latitude:  47.67035183513254,
+		Longitude: 17.63988174907635,
 	}
 	DB.Create(&locker3)
 
 	locker4 := models.Locker{
-		City:     "Szombathely",
-		Address:  "Paragvári utca 74.",
-		Capacity: 5,
+		City:      "Szombathely",
+		Address:   "Paragvári utca 74.",
+		Capacity:  5,
+		Latitude:  47.24350217822487,
+		Longitude: 17.623955422088322,
 	}
 	DB.Create(&locker4)
 
 	locker5 := models.Locker{
-		City:     "Szombathely",
-		Address:  "Gömör utca 3.",
-		Capacity: 5,
+		City:      "Szombathely",
+		Address:   "Gömör utca 3.",
+		Capacity:  5,
+		Latitude:  47.22994517025941,
+		Longitude: 16.60908613742963,
 	}
 	DB.Create(&locker5)
 
 	locker6 := models.Locker{
-		City:     "Szombathely",
-		Address:  "Éhen Gyula tér 3.",
-		Capacity: 10,
+		City:      "Szombathely",
+		Address:   "Éhen Gyula tér 3.",
+		Capacity:  10,
+		Latitude:  47.23677632684086,
+		Longitude: 16.631628691405695,
 	}
 	DB.Create(&locker6)
 
 	locker7 := models.Locker{
-		City:     "Szombathely",
-		Address:  "Sziget utca 7.",
-		Capacity: 15,
+		City:      "Szombathely",
+		Address:   "Sziget utca 7.",
+		Capacity:  15,
+		Latitude:  47.23858035784418,
+		Longitude: 16.64677093558233,
 	}
 	DB.Create(&locker7)
 

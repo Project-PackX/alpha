@@ -70,4 +70,8 @@ func Routes(app *fiber.App) {
 
 	lockers.Get("/packages/:id", controllers.GetPackagesByLockerID) // /api/lockers/packages/{id} : Get all the information about the packages that are in the {id}. locker
 	lockers.Get("/fullness/:id", controllers.GetFullness)           // /api/lockers/fullness/{id} : Get the fullness stats (cap, number of package, percentage) of the {id}. locker
+
+	emissions := api.Group("/emissions")
+
+	emissions.Get("", controllers.GetAllAndPerPackageEmission)
 }

@@ -13,9 +13,10 @@ type Locker struct {
 		UpdatedAt time.Time
 		DeletedAt gorm.DeletedAt `gorm:"index"`
 	*/
-	City    string //Name of the city where the locker is
-	Address string // Address of the locker
-	/* Possibly there will be 2 more column for X and Y geo. points if we want to show them on a map */
+	City      string //Name of the city where the locker is
+	Address   string // Address of the locker
+	Latitude  float64
+	Longitude float64
 
 	Capacity uint // Shows how many packages could be there
 }

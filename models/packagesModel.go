@@ -28,6 +28,7 @@ type Package struct {
 	Price               float64   // Delivery fee (how to calculate?)
 	Code                string    // Code to open the locker (both sender and receiver) - random 6 digit number maybe?
 	DeliveryDate        time.Time // Date when the package arrives
+	Co2                 float64   // Amount of CO2 spared with this package
 	Note                string    // Extra note
 	CourierID           uint      // Courier's id who delivers the package (can be different from send. locker to warehouse and warehouse to dest. locker?)
 }

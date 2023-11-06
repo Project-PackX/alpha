@@ -328,7 +328,6 @@ func ResetPassword(c *fiber.Ctx) error {
 
 	email := c.Get("email")
 
-	// Get the user with the given email
 	var user models.User
 	initializers.DB.Where("email = ?", email).Find(&user)
 	if user.ID == 0 {
