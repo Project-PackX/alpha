@@ -1,7 +1,6 @@
 package controllers
 
 import (
-	"fmt"
 	"math"
 
 	"github.com/Project-PackX/backend/exceptions"
@@ -65,8 +64,6 @@ func ListLockers(c *fiber.Ctx) error {
 
 		var temp []models.PackageLocker
 		initializers.DB.Find(&temp, "locker_id = ?", lockers[i].ID)
-
-		fmt.Println(temp)
 
 		nPackages := int(len(temp))
 
