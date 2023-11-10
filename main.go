@@ -4,6 +4,8 @@ import (
 	"os"
 
 	"github.com/Project-PackX/backend/initializers"
+	"github.com/Project-PackX/backend/utils"
+	"github.com/mikhail-bigun/fiberlogrus"
 
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/fiber/v2/middleware/cors"
@@ -26,8 +28,20 @@ func init() {
 }
 
 func main() {
-	// Creating the fiber app with views
-	app := fiber.New(fiber.Config{})
+	// Creating the fiber app
+	app := fiber.New(fiber.Config{
+		DisableStartupMessage: true,
+	})
+
+	logger := utils.Logger
+	logger.Info("App successfully started on port " + os.Getenv("PORT"))
+
+	app.Use(
+		fiberlogrus.New(
+			fiberlogrus.Config{
+				Logger: logger,
+				Tags:   fiberlogrus.CommonTags,
+			}))
 
 	// Setting up the Cross-Origin Resource Sharing config
 	app.Use(cors.New(cors.ConfigDefault))
@@ -37,5 +51,4 @@ func main() {
 
 	// Start the webserver
 	app.Listen(":" + os.Getenv("PORT"))
-
 }
