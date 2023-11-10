@@ -136,8 +136,8 @@ func ListPackages(c *fiber.Ctx) error {
 func AddNewPackage(c *fiber.Ctx) error {
 
 	// Creating the new package with the input json body
-	csomag := new(models.Package)
-	if err := c.BodyParser(csomag); err != nil {
+	candidatePackage := new(models.Package)
+	if err := c.BodyParser(candidatePackage); err != nil {
 		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
 			"Message": "Wrong format",
 		})
@@ -146,13 +146,13 @@ func AddNewPackage(c *fiber.Ctx) error {
 	var senderLocker *models.Locker
 	var destinationLocker *models.Locker
 
-	initializers.DB.Find(&senderLocker, "ID = ?", csomag.SenderLockerId)
-	initializers.DB.Find(&destinationLocker, "ID = ?", csomag.DestinationLockerId)
+	initializers.DB.Find(&senderLocker, "ID = ?", candidatePackage.SenderLockerId)
+	initializers.DB.Find(&destinationLocker, "ID = ?", candidatePackage.DestinationLockerId)
 
 	var packagesToSenderLocker []models.PackageLocker
 	var packagesToDestinationLocker []models.PackageLocker
-	initializers.DB.Find(&packagesToSenderLocker, "locker_id = ?", csomag.SenderLockerId)
-	initializers.DB.Find(&packagesToDestinationLocker, "locker_id = ?", csomag.DestinationLockerId)
+	initializers.DB.Find(&packagesToSenderLocker, "locker_id = ?", candidatePackage.SenderLockerId)
+	initializers.DB.Find(&packagesToDestinationLocker, "locker_id = ?", candidatePackage.DestinationLockerId)
 
 	nPackagesSenderLocker := len(packagesToSenderLocker)
 	nPackagesDestinationLocker := len(packagesToDestinationLocker)
@@ -170,32 +170,32 @@ func AddNewPackage(c *fiber.Ctx) error {
 	}
 
 	// Get the size of a package
-	meret := csomag.Size
-	if meret == "small" {
-		csomag.Size = enums.Sizes.Small
-	} else if meret == "medium" {
-		csomag.Size = enums.Sizes.Medium
+	size := candidatePackage.Size
+	if size == "small" {
+		candidatePackage.Size = enums.Sizes.Small
+	} else if size == "medium" {
+		candidatePackage.Size = enums.Sizes.Medium
 	} else {
-		csomag.Size = enums.Sizes.Large
+		candidatePackage.Size = enums.Sizes.Large
 	}
 
 	// Generate a random 6 digit number for the package code
-	pcode := utils.RandomString(6)
-	csomag.Code = pcode
+	pCode := utils.RandomString(6)
+	candidatePackage.Code = pCode
 
 	// Generate TrackID
-	trackid := utils.RandomString(10)
-	csomag.TrackID = trackid
+	trackId := utils.RandomString(10)
+	candidatePackage.TrackID = trackId
 
 	// Calculate CO2 savings
-	csomag.Co2 = utils.CalculateEmissionDifference(utils.CalculateDistance(senderLocker.Latitude, senderLocker.Longitude, destinationLocker.Latitude, destinationLocker.Longitude))
+	candidatePackage.Co2 = utils.CalculateEmissionDifference(utils.CalculateDistance(senderLocker.Latitude, senderLocker.Longitude, destinationLocker.Latitude, destinationLocker.Longitude))
 
 	// Inserting the new package
-	result := initializers.DB.Create(&csomag)
+	result := initializers.DB.Create(&candidatePackage)
 
 	// Adding dispatch status
 	packageStatus := new(models.PackageStatus)
-	packageStatus.Package_id = csomag.ID
+	packageStatus.Package_id = candidatePackage.ID
 	packageStatus.Status_id = 1
 	saveResult := initializers.DB.Create(&packageStatus)
 
@@ -207,25 +207,25 @@ func AddNewPackage(c *fiber.Ctx) error {
 	}
 
 	var packageToSenderLocker models.PackageLocker
-	packageToSenderLocker.Package_id = csomag.ID
-	packageToSenderLocker.Locker_id = csomag.SenderLockerId
+	packageToSenderLocker.Package_id = candidatePackage.ID
+	packageToSenderLocker.Locker_id = candidatePackage.SenderLockerId
 
 	var packageToDestinationLocker models.PackageLocker
-	packageToDestinationLocker.Package_id = csomag.ID
-	packageToDestinationLocker.Locker_id = csomag.DestinationLockerId
+	packageToDestinationLocker.Package_id = candidatePackage.ID
+	packageToDestinationLocker.Locker_id = candidatePackage.DestinationLockerId
 
 	initializers.DB.Save(packageToSenderLocker)
 	initializers.DB.Save(packageToDestinationLocker)
 
 	var sender *models.User
 
-	initializers.DB.Find(&sender, "ID = ?", csomag.UserID)
+	initializers.DB.Find(&sender, "ID = ?", candidatePackage.UserID)
 
-	var body = fmt.Sprintf(BODY_ADD_PACKAGE, senderLocker.City+", "+senderLocker.Address, destinationLocker.City+", "+destinationLocker.Address, csomag.TrackID)
-	utils.SendEmail([]string{csomag.ReceiverEmail, sender.Email}, SUBJECT_ADD_PACKAGE, body)
+	var body = fmt.Sprintf(BODY_ADD_PACKAGE, senderLocker.City+", "+senderLocker.Address, destinationLocker.City+", "+destinationLocker.Address, candidatePackage.TrackID)
+	utils.SendEmail([]string{candidatePackage.ReceiverEmail, sender.Email}, SUBJECT_ADD_PACKAGE, body)
 
 	// Return as OK
-	return c.Status(fiber.StatusOK).JSON(csomag)
+	return c.Status(fiber.StatusOK).JSON(candidatePackage)
 }
 
 // Remove package with URL input {id}

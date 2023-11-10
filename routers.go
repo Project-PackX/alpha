@@ -9,10 +9,7 @@ import (
 
 // Setting up endpoints + handle functions
 func Routes(app *fiber.App) {
-	app.Get("/", controllers.PostsIndex) // Test HTML
-
 	api := app.Group("/api")
-
 	packages := api.Group("/packages")
 
 	packages.Get("/get/:trackid", controllers.ListPackageByID) // /api/packages/get/{id} : Getting the {id}. package details
@@ -37,27 +34,20 @@ func Routes(app *fiber.App) {
 	users.Post("/login", controllers.Login) // /api/users/login : Login user
 
 	users.Get("/password-reset-code", controllers.SendPasswordResetCode) // /api/users/password-reset-code : Sending password reset code
-
-	users.Post("/check-code", controllers.CheckResetCode) // /api/users/check-code : Checking the code
-
-	users.Post("/password-reset", controllers.ResetPassword) // /api/users/password-reset : Resetting the password
+	users.Post("/check-code", controllers.CheckResetCode)                // /api/users/check-code : Checking the code
+	users.Post("/password-reset", controllers.ResetPassword)             // /api/users/password-reset : Resetting the password
 
 	// From this point, all user endpoints are being authenticated
 	users.Use(middleware.RequireJwtTokenAuth)
 
 	users.Get("/:id", controllers.GetUserById) // /api/users/{id} : Get User by Id
-
-	users.Put("/:id", controllers.EditUser) // /api/users/{id} : Edit User
+	users.Put("/:id", controllers.EditUser)    // /api/users/{id} : Edit User
 
 	users.Get("/get-accesslevel/:id", controllers.GetAccessLevel) // /api/users/get-accesslevel/{id} : Get the access level of the {id}. user
-
-	users.Post("/set-accesslevel", controllers.SetAccessLevel) // /api/users/set-accesslevel : Set the access level of the user {email, accesslevel}
+	users.Post("/set-accesslevel", controllers.SetAccessLevel)    // /api/users/set-accesslevel : Set the access level of the user {email, accesslevel}
 
 	users.Get("/:id/packages", controllers.GetPackagesUnderUser) // /api/users/{id}/packages : Get all packages which the {id}. user sent
-
-	users.Delete("/:id", controllers.DeleteUserById) // api/users/{id} Delete user by id
-
-	// users.Get("/packages", controllers.GetPackagesUnderUsers) "// csomagok.Get("/uwp", controllers.ListUsersWithPackages" Instead of this, use the users/packages or just get all of the packages
+	users.Delete("/:id", controllers.DeleteUserById)             // api/users/{id} Delete user by id
 
 	lockers := api.Group("/lockers")
 
@@ -65,13 +55,10 @@ func Routes(app *fiber.App) {
 
 	// From this point, all locker endpoints are being authenticated
 	lockers.Use(middleware.RequireJwtTokenAuth)
-
-	lockers.Post("/new", controllers.AddNewLocker) // /api/lockers/new : Add new locker via input json
-
+	lockers.Post("/new", controllers.AddNewLocker)                  // /api/lockers/new : Add new locker via input json
 	lockers.Get("/packages/:id", controllers.GetPackagesByLockerID) // /api/lockers/packages/{id} : Get all the information about the packages that are in the {id}. locker
 	lockers.Get("/fullness/:id", controllers.GetFullness)           // /api/lockers/fullness/{id} : Get the fullness stats (cap, number of package, percentage) of the {id}. locker
 
 	emissions := api.Group("/emissions")
-
 	emissions.Get("", controllers.GetAllAndPerPackageEmission)
 }
