@@ -7,10 +7,11 @@ import (
 
 	"github.com/Project-PackX/backend/enums"
 	"github.com/Project-PackX/backend/models"
+	"github.com/Project-PackX/backend/utils"
 
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
-	"gorm.io/gorm/logger"
+	gormLogger "gorm.io/gorm/logger"
 )
 
 // Defining the application databse structure with gorm
@@ -18,15 +19,17 @@ var DB *gorm.DB
 
 // Connectiing to the database based on the environment variables
 func ConnectToDatabase() {
+	logger := utils.Logger
+
 	var err error
 	dsn := fmt.Sprintf("host=%s user=%s password=%s dbname=%s port=%d", os.Getenv("POSTGRES_HOST"), os.Getenv("POSTGRES_USER"), os.Getenv("POSTGRES_PASSWORD"), os.Getenv("POSTGRES_DB"), 5432)
 	DB, err = gorm.Open(postgres.Open(dsn), &gorm.Config{
-		Logger: logger.Default.LogMode(logger.Silent),
+		Logger: gormLogger.Default.LogMode(gormLogger.Silent),
 	})
 
 	// Error handling
 	if err != nil {
-		fmt.Println("Nem sikerült kapcsolódni az adatbázishoz")
+		logger.Error("Couldn't connect to the database")
 	}
 }
 
