@@ -35,52 +35,46 @@ func AddNewLocker(c *fiber.Ctx) error {
 	})
 }
 
+type LockerInfo struct {
+	models.Locker
+	PackagesCount int     `json:"packagesCount"`
+	UsedPercent   float64 `json:"usedPercent"`
+}
+
 // List all lockers
 func ListLockers(c *fiber.Ctx) error {
-
 	var lockers []models.Locker // Slice that will contain all lockers
 
 	// Execute 'SELECT * FROM public.lockers' query
 	result := initializers.DB.Find(&lockers)
 
-	// Error handling
 	if result.Error != nil {
 		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
 			"message": "Something bad happened during the query",
 		})
 	}
 
-	// Separately treated case where no record exists
 	if result.RowsAffected == 0 {
 		return c.Status(fiber.StatusOK).JSON(fiber.Map{
 			"message": "There are no lockers in the database",
 		})
 	}
 
-	var npacks []int
-	var percents []float64
-
+	var lockerInfos []LockerInfo
 	for i := 0; i < len(lockers); i++ {
+		var packagesInLocker []models.PackageLocker
+		initializers.DB.Find(&packagesInLocker, "locker_id = ?", lockers[i].ID)
 
-		var temp []models.PackageLocker
-		initializers.DB.Find(&temp, "locker_id = ?", lockers[i].ID)
+		currPackagesCount := int(len(packagesInLocker))
+		usedPercent := float64(currPackagesCount) / float64(lockers[i].Capacity) * 100
 
-		nPackages := int(len(temp))
-
-		percent := float64(nPackages) / float64(lockers[i].Capacity)
-		percent = math.Round(percent * 100)
-
-		npacks = append(npacks, nPackages)
-		percents = append(percents, float64(percent))
-
+		lockerInfos = append(lockerInfos, LockerInfo{lockers[i], currPackagesCount, float64(usedPercent)})
 	}
 
 	// Returning the lockers
 	return c.Status(fiber.StatusOK).JSON(fiber.Map{
-		"message":          "Success",
-		"lockers":          lockers,
-		"numberofpackages": npacks,
-		"percents":         percents,
+		"message": "Success",
+		"lockers": lockerInfos,
 	})
 }
 
