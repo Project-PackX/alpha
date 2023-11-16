@@ -51,10 +51,7 @@ func ListUsers(c *fiber.Ctx) error {
 	}
 
 	// Returning the users
-	return c.Status(fiber.StatusOK).JSON(fiber.Map{
-		"message": "Success",
-		"users":   users,
-	})
+	return c.Status(fiber.StatusOK).JSON(users)
 }
 
 func RegisterNewUser(c *fiber.Ctx) error {
