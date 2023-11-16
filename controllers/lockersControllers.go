@@ -29,10 +29,7 @@ func AddNewLocker(c *fiber.Ctx) error {
 		})
 	}
 
-	// Return as OK
-	return c.Status(fiber.StatusOK).JSON(fiber.Map{
-		"Message": "Locker successfully added",
-	})
+	return c.Status(fiber.StatusOK).JSON(locker)
 }
 
 // List all lockers
