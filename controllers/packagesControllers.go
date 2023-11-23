@@ -259,7 +259,20 @@ func ListPackageByID(c *fiber.Ctx) error {
 
 	// Search for the package with the desired {id}
 	var packageData *models.Package
-	err := initializers.DB.Where("track_id = ?", id).First(&packageData).Error
+	initializers.DB.Where("track_id = ?", id).First(&packageData)
+
+	return c.Status(fiber.StatusOK).JSON(packageData)
+}
+
+// Getting the package by code
+func ListPackageCode(c *fiber.Ctx) error {
+
+	// Getting the {id} from URL
+	id := c.Params("code")
+
+	// Search for the package with the desired {id}
+	var packageData *models.Package
+	err := initializers.DB.Where("code = ?", id).First(&packageData).Error
 	packID := packageData.ID
 
 	// Search for Status
