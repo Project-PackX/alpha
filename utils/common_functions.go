@@ -32,3 +32,14 @@ func RandomString(length int) string {
 
 	return string(bytes)
 }
+
+// Generate a random string (numbers) with the given length
+func RandomPackageCode(length int) string {
+	characters := []byte("0123456789")
+	bytes := make([]byte, length)
+	for i := range bytes {
+		bytes[i] = characters[rand.Intn(len(characters))]
+	}
+
+	return string(bytes)
+}

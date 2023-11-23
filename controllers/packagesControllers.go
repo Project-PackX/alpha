@@ -17,6 +17,7 @@ var BODY_ADD_PACKAGE = `
 	<p style="color:black;">From: %s<br>
 	To: %s</p>
 	<p>You can track your package with this track ID:<em>%s</em></p>
+	<p>You can open the locker with code:<em>%s</em></p>
 	<p>Sincerely,<br>PackX</br></p>
 `
 
@@ -180,8 +181,8 @@ func AddNewPackage(c *fiber.Ctx) error {
 	}
 
 	// Generate a random 6 digit number for the package code
-	pCode := utils.RandomString(6)
-	candidatePackage.Code = pCode
+	packageCode := utils.RandomPackageCode(6)
+	candidatePackage.Code = packageCode
 
 	// Generate TrackID
 	trackId := utils.RandomString(10)
@@ -221,7 +222,7 @@ func AddNewPackage(c *fiber.Ctx) error {
 
 	initializers.DB.Find(&sender, "ID = ?", candidatePackage.UserID)
 
-	var body = fmt.Sprintf(BODY_ADD_PACKAGE, senderLocker.City+", "+senderLocker.Address, destinationLocker.City+", "+destinationLocker.Address, candidatePackage.TrackID)
+	var body = fmt.Sprintf(BODY_ADD_PACKAGE, senderLocker.City+", "+senderLocker.Address, destinationLocker.City+", "+destinationLocker.Address, candidatePackage.TrackID, packageCode)
 	utils.SendEmail([]string{candidatePackage.ReceiverEmail, sender.Email}, SUBJECT_ADD_PACKAGE, body)
 
 	// Return as OK
