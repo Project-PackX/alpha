@@ -259,20 +259,7 @@ func ListPackageByID(c *fiber.Ctx) error {
 
 	// Search for the package with the desired {id}
 	var packageData *models.Package
-	initializers.DB.Where("track_id = ?", id).First(&packageData)
-
-	return c.Status(fiber.StatusOK).JSON(packageData)
-}
-
-// Getting the package by code
-func ListPackageCode(c *fiber.Ctx) error {
-
-	// Getting the {id} from URL
-	id := c.Params("code")
-
-	// Search for the package with the desired {id}
-	var packageData *models.Package
-	err := initializers.DB.Where("code = ?", id).First(&packageData).Error
+	err := initializers.DB.Where("track_id = ?", id).First(&packageData).Error
 	packID := packageData.ID
 
 	// Search for Status
@@ -301,6 +288,35 @@ func ListPackageCode(c *fiber.Ctx) error {
 		"Status": statusname.Name,
 	})
 	return nil
+}
+
+// Getting the package by code
+func ListPackageCode(c *fiber.Ctx) error {
+
+	// Getting the {id} from URL
+	code := c.Params("code")
+
+	// Search for the package with the desired {id}
+	var packageData *models.Package
+	initializers.DB.Where("code = ?", code).First(&packageData)
+
+	if packageData.ID == 0 {
+		return c.SendStatus(fiber.StatusNotFound)
+	}
+
+	packID := packageData.ID
+
+	var statusindex models.PackageStatus
+	initializers.DB.Find(&statusindex, "package_id = ?", packID)
+
+	// Getting the right status row in the status table
+	var statusname models.Status
+	initializers.DB.Find(&statusname, "id = ?", statusindex.Status_id)
+
+	return c.Status(fiber.StatusOK).JSON(fiber.Map{
+		"data":   packageData,
+		"status": statusname.Name,
+	})
 }
 
 // Change a package status via input JSON (ID, NewStatusID)
