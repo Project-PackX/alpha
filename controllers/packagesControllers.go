@@ -402,17 +402,20 @@ func ChangeStatusUp(c *fiber.Ctx) error {
 }
 
 func MakeCanceled(c *fiber.Ctx) error {
+	//Getting the {id} from URL
 	id := c.Params("id")
 
-	initializers.DB.Model(&models.Package{}).Where("package_id = ?", id).Update("status_id", 6)
+	// Removing the package based on the {id}
+	result := initializers.DB.Delete(&models.Package{}, id)
 
-	var csomag *models.Package
-	initializers.DB.Where("package_id = ?", id).Find(&csomag)
-
-	initializers.DB.Where("package_id = ? AND locker_id = ?", id, csomag.DestinationLockerId).Delete(&models.PackageLocker{})
+	if result.Error != nil {
+		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
+			"Message": "Error during the cancellation of the package",
+		})
+	}
 
 	return c.Status(fiber.StatusOK).JSON(fiber.Map{
-		"Message": "Package successfully canceled",
+		"Message": "Package canceled successfully",
 	})
 }
 
