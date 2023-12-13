@@ -61,290 +61,362 @@ func SyncDB() {
 
 // Generate test datas
 func GenerateTestEntries() {
-
-	// Users
-
-	felh1 := models.User{
-		Name:        "Kovács Bea",
-		Address:     "Liliom utca 4.",
-		Phone:       "+36201956673",
-		Email:       "k.bea@mail.com",
-		AccessLevel: enums.AccessLevel.Normal,
+	type UserTestData struct {
+		name        string
+		address     string
+		phone       string
+		email       string
+		accessLevel uint
 	}
-	DB.Create(&felh1)
 
-	felh2 := models.User{
-		Name:        "Szalma Géza",
-		Address:     "Egressy körút 58.",
-		Phone:       "+36605385438",
-		Email:       "szalmag@mail.com",
-		AccessLevel: enums.AccessLevel.Normal,
+	testUsers := []UserTestData{
+		{
+			name:        "Kovács Bea",
+			address:     "Liliom utca 4.",
+			phone:       "+36201956673",
+			email:       "k.bea@mail.com",
+			accessLevel: enums.AccessLevel.Normal,
+		},
+		{
+			name:        "Szalma Géza",
+			address:     "Egressy körút 58.",
+			phone:       "+36605385438",
+			email:       "szalmag@mail.com",
+			accessLevel: enums.AccessLevel.Normal,
+		},
+		{
+			name:        "Veres Péter",
+			address:     "Malom út 12.",
+			phone:       "+36504098931",
+			email:       "vrsptr@mail.com",
+			accessLevel: enums.AccessLevel.Admin,
+		},
 	}
-	DB.Create(&felh2)
 
-	felh3 := models.User{
-		Name:        "Veres Péter",
-		Address:     "Malom út 12.",
-		Phone:       "+36504098931",
-		Email:       "vrsptr@mail.com",
-		AccessLevel: enums.AccessLevel.Admin,
+	for _, u := range testUsers {
+		userModel := models.User{
+			Name:        u.name,
+			Address:     u.address,
+			Phone:       u.phone,
+			Email:       u.email,
+			AccessLevel: u.accessLevel,
+		}
+
+		DB.Create(&userModel)
 	}
-	DB.Create(&felh3)
 
 	// Packages
-
-	csomag1 := models.Package{
-		UserID:       2,
-		Size:         enums.Sizes.Medium,
-		Price:        37990,
-		Note:         "Utánvét",
-		CourierID:    1,
-		DeliveryDate: time.Now().Add(time.Hour * 24 * 5),
+	type PackageTestData struct {
+		userId       uint
+		size         string
+		price        float64
+		note         string
+		courierId    uint
+		deliveryDate time.Time
 	}
-	DB.Create(&csomag1)
 
-	csomag2 := models.Package{
-		UserID:       1,
-		Size:         enums.Sizes.Small,
-		Price:        225000,
-		Note:         "Javítás",
-		CourierID:    1,
-		DeliveryDate: time.Now().Add(time.Hour * 24 * 5),
+	testPackages := []PackageTestData{
+		{
+			userId:       2,
+			size:         enums.Sizes.Medium,
+			price:        37990,
+			note:         "Utánvét",
+			courierId:    1,
+			deliveryDate: time.Now().Add(time.Hour * 24 * 5),
+		},
+		{
+			userId:       1,
+			size:         enums.Sizes.Small,
+			price:        225000,
+			note:         "Javítás",
+			courierId:    1,
+			deliveryDate: time.Now().Add(time.Hour * 24 * 5),
+		},
+		{
+			userId:       2,
+			size:         enums.Sizes.Medium,
+			price:        17490,
+			note:         "-",
+			courierId:    2,
+			deliveryDate: time.Now().Add(time.Hour * 24 * 5),
+		},
+		{
+			userId:       3,
+			size:         enums.Sizes.Small,
+			price:        3989,
+			note:         "Cserekészülék",
+			courierId:    2,
+			deliveryDate: time.Now().Add(time.Hour * 24 * 5)},
+		{
+			userId:       1,
+			size:         enums.Sizes.Large,
+			price:        55990,
+			note:         "-",
+			courierId:    1,
+			deliveryDate: time.Now().Add(time.Hour * 24 * 5),
+		},
+		{
+			userId:       1,
+			size:         enums.Sizes.Small,
+			price:        3490,
+			note:         "-",
+			courierId:    2,
+			deliveryDate: time.Now().Add(time.Hour * 24 * 5),
+		},
 	}
-	DB.Create(&csomag2)
 
-	csomag3 := models.Package{
-		UserID:       2,
-		Size:         enums.Sizes.Medium,
-		Price:        17490,
-		Note:         "-",
-		CourierID:    2,
-		DeliveryDate: time.Now().Add(time.Hour * 24 * 5),
-	}
-	DB.Create(&csomag3)
+	for _, p := range testPackages {
+		packageModel := models.Package{
+			UserID:       p.userId,
+			Size:         p.size,
+			Price:        p.price,
+			Note:         p.note,
+			CourierID:    p.courierId,
+			DeliveryDate: p.deliveryDate,
+		}
 
-	csomag4 := models.Package{
-		UserID:       3,
-		Size:         enums.Sizes.Small,
-		Price:        3989,
-		Note:         "Cserekészülék",
-		CourierID:    2,
-		DeliveryDate: time.Now().Add(time.Hour * 24 * 5),
+		DB.Create(&packageModel)
 	}
-	DB.Create(&csomag4)
-
-	csomag5 := models.Package{
-		UserID:       1,
-		Size:         enums.Sizes.Large,
-		Price:        55990,
-		Note:         "-",
-		CourierID:    1,
-		DeliveryDate: time.Now().Add(time.Hour * 24 * 5),
-	}
-	DB.Create(&csomag5)
-
-	csomag6 := models.Package{
-		UserID:       1,
-		Size:         enums.Sizes.Small,
-		Price:        3490,
-		Note:         "-",
-		CourierID:    2,
-		DeliveryDate: time.Now().Add(time.Hour * 24 * 5),
-	}
-	DB.Create(&csomag6)
 
 	// Possible package statuses
-
-	statusz1 := models.Status{
-		Id:   1,
-		Name: enums.Statuses.Dispatch,
+	type StatusTestData struct {
+		id   uint
+		name string
 	}
-	DB.Create(&statusz1)
 
-	statusz2 := models.Status{
-		Id:   2,
-		Name: enums.Statuses.Transit,
+	testStatuses := []StatusTestData{
+		{
+			id:   1,
+			name: enums.Statuses.Dispatch,
+		},
+		{
+			id:   2,
+			name: enums.Statuses.Transit,
+		},
+		{
+			id:   3,
+			name: enums.Statuses.Warehouse,
+		},
+		{
+			id:   4,
+			name: enums.Statuses.Delivery,
+		},
+		{
+			id:   5,
+			name: enums.Statuses.Delivered,
+		},
+		{
+			id:   6,
+			name: enums.Statuses.Canceled,
+		},
 	}
-	DB.Create(&statusz2)
 
-	statusz3 := models.Status{
-		Id:   3,
-		Name: enums.Statuses.Warehouse,
-	}
-	DB.Create(&statusz3)
+	for _, s := range testStatuses {
+		statusModel := models.Status{
+			Id:   s.id,
+			Name: s.name,
+		}
 
-	statusz4 := models.Status{
-		Id:   4,
-		Name: enums.Statuses.Delivery,
+		DB.Create(&statusModel)
 	}
-	DB.Create(&statusz4)
-
-	statusz5 := models.Status{
-		Id:   5,
-		Name: enums.Statuses.Delivered,
-	}
-	DB.Create(&statusz5)
-
-	statusz6 := models.Status{
-		Id:   6,
-		Name: enums.Statuses.Canceled,
-	}
-	DB.Create(&statusz6)
 
 	// Package statuses
-
-	csomagstatusz1 := models.PackageStatus{
-		Package_id: 1,
-		Status_id:  1,
+	type PackageStatusTestData struct {
+		packageId uint
+		statusId  uint
 	}
-	DB.Create(&csomagstatusz1)
 
-	csomagstatusz2 := models.PackageStatus{
-		Package_id: 2,
-		Status_id:  4,
+	testPackageStatues := []PackageStatusTestData{
+		{
+			packageId: 1,
+			statusId:  1,
+		},
+		{
+			packageId: 2,
+			statusId:  4,
+		},
+		{
+			packageId: 3,
+			statusId:  3,
+		},
+		{
+			packageId: 4,
+			statusId:  5,
+		},
+		{
+			packageId: 5,
+			statusId:  2,
+		},
 	}
-	DB.Create(&csomagstatusz2)
 
-	csomagstatusz3 := models.PackageStatus{
-		Package_id: 3,
-		Status_id:  3,
-	}
-	DB.Create(&csomagstatusz3)
+	for _, ps := range testPackageStatues {
+		packageStatusModel := models.PackageStatus{
+			Package_id: ps.packageId,
+			Status_id:  ps.statusId,
+		}
 
-	csomagstatusz4 := models.PackageStatus{
-		Package_id: 4,
-		Status_id:  5,
+		DB.Create(&packageStatusModel)
 	}
-	DB.Create(&csomagstatusz4)
-
-	csomagstatusz5 := models.PackageStatus{
-		Package_id: 5,
-		Status_id:  2,
-	}
-	DB.Create(&csomagstatusz5)
 
 	// Couriers
-
-	futar1 := models.Courier{
-		Name:  "Kiss Bendegúz",
-		Phone: "+36403437791",
+	type CourierTestData struct {
+		name  string
+		phone string
 	}
-	DB.Create(&futar1)
 
-	futar2 := models.Courier{
-		Name:  "Némedi Emma",
-		Phone: "+36301984673",
+	testCouriers := []CourierTestData{
+		{
+			name:  "Kiss Bendegúz",
+			phone: "+36403437791",
+		},
+		{
+			name:  "Némedi Emma",
+			phone: "+36301984673",
+		},
 	}
-	DB.Create(&futar2)
+
+	for _, t := range testCouriers {
+		courierModel := models.Courier{
+			Name:  t.name,
+			Phone: t.phone,
+		}
+		DB.Create(&courierModel)
+	}
 
 	// Lockers
-
-	locker1 := models.Locker{
-		City:      "Győr",
-		Address:   "Szent István út 23.",
-		Capacity:  7,
-		Latitude:  47.683337112393474,
-		Longitude: 17.623955422088322,
+	type LockerTestData struct {
+		city      string
+		address   string
+		capacity  uint
+		latitude  float64
+		longitude float64
 	}
-	DB.Create(&locker1)
 
-	locker2 := models.Locker{
-		City:      "Győr",
-		Address:   "Kiss Ernő utca 5.",
-		Capacity:  5,
-		Latitude:  47.68834622211481,
-		Longitude: 17.623955422088322,
+	testLockers := []LockerTestData{
+		{
+			city:      "Győr",
+			address:   "Szent István út 23.",
+			capacity:  7,
+			latitude:  47.683337112393474,
+			longitude: 17.623955422088322,
+		},
+		{
+			city:      "Győr",
+			address:   "Kiss Ernő utca 5.",
+			capacity:  5,
+			latitude:  47.68834622211481,
+			longitude: 17.623955422088322,
+		},
+		{
+			city:      "Győr",
+			address:   "Lomnic utca 30.",
+			capacity:  5,
+			latitude:  47.67035183513254,
+			longitude: 17.63988174907635,
+		},
+		{
+			city:      "Szombathely",
+			address:   "Paragvári utca 74.",
+			capacity:  5,
+			latitude:  47.24350217822487,
+			longitude: 17.623955422088322,
+		},
+		{
+			city:      "Szombathely",
+			address:   "Gömör utca 3.",
+			capacity:  5,
+			latitude:  47.22994517025941,
+			longitude: 16.60908613742963,
+		},
+		{
+			city:      "Szombathely",
+			address:   "Éhen Gyula tér 3.",
+			capacity:  10,
+			latitude:  47.23677632684086,
+			longitude: 16.631628691405695,
+		},
+		{
+			city:      "Szombathely",
+			address:   "Sziget utca 7.",
+			capacity:  15,
+			latitude:  47.23858035784418,
+			longitude: 16.64677093558233,
+		},
 	}
-	DB.Create(&locker2)
 
-	locker3 := models.Locker{
-		City:      "Győr",
-		Address:   "Lomnic utca 30.",
-		Capacity:  5,
-		Latitude:  47.67035183513254,
-		Longitude: 17.63988174907635,
+	for _, l := range testLockers {
+		lockerModel := models.Locker{
+			City:      l.city,
+			Address:   l.address,
+			Capacity:  l.capacity,
+			Latitude:  l.latitude,
+			Longitude: l.longitude,
+		}
+
+		DB.Create(&lockerModel)
 	}
-	DB.Create(&locker3)
 
-	locker4 := models.Locker{
-		City:      "Szombathely",
-		Address:   "Paragvári utca 74.",
-		Capacity:  5,
-		Latitude:  47.24350217822487,
-		Longitude: 17.623955422088322,
+	// Locker Groups
+	type LockerGroupTestData struct {
+		id   uint
+		city string
 	}
-	DB.Create(&locker4)
 
-	locker5 := models.Locker{
-		City:      "Szombathely",
-		Address:   "Gömör utca 3.",
-		Capacity:  5,
-		Latitude:  47.22994517025941,
-		Longitude: 16.60908613742963,
+	testLockerGroups := []LockerGroupTestData{
+		{
+			id:   1,
+			city: "Győr",
+		},
+		{
+			id:   2,
+			city: "Szombathely",
+		},
 	}
-	DB.Create(&locker5)
 
-	locker6 := models.Locker{
-		City:      "Szombathely",
-		Address:   "Éhen Gyula tér 3.",
-		Capacity:  10,
-		Latitude:  47.23677632684086,
-		Longitude: 16.631628691405695,
+	for _, lg := range testLockerGroups {
+		lockerGroupModel := models.LockerGroup{
+			ID:   lg.id,
+			City: lg.city,
+		}
+
+		DB.Create(&lockerGroupModel)
 	}
-	DB.Create(&locker6)
 
-	locker7 := models.Locker{
-		City:      "Szombathely",
-		Address:   "Sziget utca 7.",
-		Capacity:  15,
-		Latitude:  47.23858035784418,
-		Longitude: 16.64677093558233,
+	// Package Lockers
+	type PackageLockersTestData struct {
+		packageId uint
+		lockerId  uint
 	}
-	DB.Create(&locker7)
 
-	// Lockergroups
-
-	lgroup1 := models.LockerGroup{
-		ID:   1,
-		City: "Győr",
+	testPackageLockers := []PackageLockersTestData{
+		{
+			packageId: 1,
+			lockerId:  2,
+		},
+		{
+			packageId: 2,
+			lockerId:  1,
+		},
+		{
+			packageId: 3,
+			lockerId:  6,
+		},
+		{
+			packageId: 4,
+			lockerId:  1,
+		},
+		{
+			packageId: 5,
+			lockerId:  6,
+		},
 	}
-	DB.Create(&lgroup1)
 
-	lgroup2 := models.LockerGroup{
-		ID:   2,
-		City: "Szombathely",
+	for _, pl := range testPackageLockers {
+		packageLockerModel := models.PackageLocker{
+			Package_id: pl.packageId,
+			Locker_id:  pl.lockerId,
+		}
+
+		DB.Create(&packageLockerModel)
 	}
-	DB.Create(&lgroup2)
-
-	// PackagesLockers
-
-	pl1 := models.PackageLocker{
-		Package_id: 1,
-		Locker_id:  2,
-	}
-	DB.Create(&pl1)
-
-	pl2 := models.PackageLocker{
-		Package_id: 2,
-		Locker_id:  1,
-	}
-	DB.Create(&pl2)
-
-	pl3 := models.PackageLocker{
-		Package_id: 3,
-		Locker_id:  6,
-	}
-	DB.Create(&pl3)
-
-	pl4 := models.PackageLocker{
-		Package_id: 4,
-		Locker_id:  1,
-	}
-	DB.Create(&pl4)
-
-	pl5 := models.PackageLocker{
-		Package_id: 5,
-		Locker_id:  6,
-	}
-	DB.Create(&pl5)
 }
