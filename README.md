@@ -1,11 +1,11 @@
 # Project PackX
 
-Projektmunka 2023/1, 2023/2-es félév
+Projektmunka I-II. (2022-2023/2, 2023-2024/2-es félévek)
 
-A project PackX során egy olyan csomagszállító szoftvert készítettünk el, 
+A PackX készítése során egy olyan csomagszállító szoftvert fejlesztettünk, 
 amely használatával minden igényt kielégítve tudunk csomagokat küldeni, szállítani és adminisztártori joggal felhasználókat, csomagokat kezelni.
 
-A backend Go-ban, a frontend javascriptben, Vue keretrendszerrel készült.
+A backend Góban, a frontend JavaScriptben, React keretrendszerrel készült.
 
 ## Készítők
 
